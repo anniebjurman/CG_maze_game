@@ -110,3 +110,8 @@ class Cube:
         
         glDrawArrays(GL_TRIANGLE_FAN, 0, 4)
         ## ADD CODE HERE ##
+        glDrawArrays(GL_TRIANGLE_FAN, 4, 4) 
+        glDrawArrays(GL_TRIANGLE_FAN, 8, 4)
+        glDrawArrays(GL_TRIANGLE_FAN, 12, 4)
+        glDrawArrays(GL_TRIANGLE_FAN, 16, 4)
+        glDrawArrays(GL_TRIANGLE_FAN, 20, 4)
