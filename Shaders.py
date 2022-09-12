@@ -37,6 +37,9 @@ class Shader3D:
         self.normalLoc = glGetAttribLocation(self.renderingProgramID, "a_normal") 
         glEnableVertexAttribArray(self.normalLoc) 
 
+        # get ID for color variable
+        self.colorLoc = glGetUniformLocation(self.renderingProgramID, "u_color") 
+
         self.modelMatrixLoc			= glGetUniformLocation(self.renderingProgramID, "u_model_matrix")
         self.projectionViewMatrixLoc			= glGetUniformLocation(self.renderingProgramID, "u_projection_view_matrix")
 
@@ -59,6 +62,7 @@ class Shader3D:
 
     def set_normal_attribute(self, vertex_array):
         glVertexAttribPointer(self.normalLoc, 3, GL_FLOAT, False, 0, vertex_array)
-
-    ## ADD CODE HERE ##
+    
+    def set_solid_color(self, r, g, b): 
+        glUniform4f(self.colorLoc, r, g, b, 1.0)
 

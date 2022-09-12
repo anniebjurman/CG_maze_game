@@ -66,6 +66,11 @@ class GraphicsProgram3D:
         self.model_matrix.push_matrix()
         self.model_matrix.add_nothing()  ### --- ADD PROPER TRANSFORMATION OPERATIONS --- ###
         self.shader.set_model_matrix(self.model_matrix.matrix)
+
+        # change the color of the cube
+        self.shader.set_solid_color(0.2, 0.4, 0.9)
+
+
         self.cube.draw(self.shader)
         self.model_matrix.pop_matrix()
 
