@@ -106,6 +106,7 @@ class Cube:
         
         shader.set_position_attribute(self.position_array)
         ## ADD CODE HERE ##
+        shader.set_normal_attribute(self.normal_array)
         
         glDrawArrays(GL_TRIANGLE_FAN, 0, 4)
         ## ADD CODE HERE ##

@@ -31,10 +31,11 @@ class Shader3D:
         glAttachShader(self.renderingProgramID, frag_shader)
         glLinkProgram(self.renderingProgramID)
 
-        self.positionLoc			= glGetAttribLocation(self.renderingProgramID, "a_position")
+        self.positionLoc = glGetAttribLocation(self.renderingProgramID, "a_position")
         glEnableVertexAttribArray(self.positionLoc)
-
         ## ADD CODE HERE ##
+        self.normalLoc = glGetAttribLocation(self.renderingProgramID, "a_normal") 
+        glEnableVertexAttribArray(self.normalLoc) 
 
         self.modelMatrixLoc			= glGetUniformLocation(self.renderingProgramID, "u_model_matrix")
         self.projectionViewMatrixLoc			= glGetUniformLocation(self.renderingProgramID, "u_projection_view_matrix")
@@ -55,6 +56,9 @@ class Shader3D:
 
     def set_position_attribute(self, vertex_array):
         glVertexAttribPointer(self.positionLoc, 3, GL_FLOAT, False, 0, vertex_array)
+
+    def set_normal_attribute(self, vertex_array):
+        glVertexAttribPointer(self.normalLoc, 3, GL_FLOAT, False, 0, vertex_array)
 
     ## ADD CODE HERE ##
 

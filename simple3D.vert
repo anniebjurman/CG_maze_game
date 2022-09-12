@@ -1,4 +1,5 @@
 attribute vec3 a_position;
+attribute vec3 a_normal;
 //## ADD CODE HERE ##
 
 uniform mat4 u_model_matrix;
@@ -9,9 +10,11 @@ varying vec4 v_color;  //Leave the varying variables alone to begin with
 void main(void)
 {
 	vec4 position = vec4(a_position.x, a_position.y, a_position.z, 1.0);
+	vec4 normal = vec4(a_normal.x, a_normal.y, a_normal.z, 0.0);
 	//## ADD CODE HERE ##
 
 	position = u_model_matrix * position;
+	normal = u_model_matrix * normal;
 	//## ADD CODE HERE ##
 
 	float light_factor_1 = max(dot(normalize(normal), normalize(vec4(1, 2, 3, 0))), 0.0);
