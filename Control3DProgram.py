@@ -64,33 +64,22 @@ class GraphicsProgram3D:
         glViewport(0, 0, 800, 600)
         self.model_matrix.load_identity()
 
-        #box 1
-        self.model_matrix.push_matrix()
-        self.model_matrix.add_move(1,1,0)
-        self.shader.set_model_matrix(self.model_matrix.matrix)
-        self.shader.set_solid_color(1,0,0)
-        self.cube.draw(self.shader)
-        self.model_matrix.pop_matrix()
-
-        #box2
-        self.model_matrix.push_matrix()
-        self.model_matrix.add_scale(2,2,2)
-        self.shader.set_model_matrix(self.model_matrix.matrix)
-        self.shader.set_solid_color(0, 1, 0)
-        self.cube.draw(self.shader)
-        self.model_matrix.pop_matrix()
-
-        #box3
-        self.model_matrix.push_matrix()
-        self.model_matrix.add_move(2,1,0)
-        self.model_matrix.add_rotation(200, 'z')
-        self.shader.set_model_matrix(self.model_matrix.matrix)
-        self.shader.set_solid_color(0, 0, 1)
-        self.cube.draw(self.shader)
-        self.model_matrix.pop_matrix()
+        self.draw_cube(tx=-1, ty=-1, r=1)
+        self.draw_cube(tx=-0.5, sx=1, sy=1, g=1)
+        self.draw_cube(angle=200, axis='y', b=1)
 
         pygame.display.flip()
 
+    def draw_cube(self, tx=1, ty=1, tz=1, sx=1, sy=1, sz= 1, angle=0, axis='', r=0, g=0, b=0):
+        self.model_matrix.push_matrix()
+        self.model_matrix.add_move(tx,ty,tz)
+        self.model_matrix.add_rotation(angle, axis)
+        self.model_matrix.add_scale(sx, sy,sz)
+        self.shader.set_model_matrix(self.model_matrix.matrix)
+        self.shader.set_solid_color(r, g, b)
+        self.cube.draw(self.shader)
+        self.model_matrix.pop_matrix()
+        
     def program_loop(self):
         exiting = False
         while not exiting:
