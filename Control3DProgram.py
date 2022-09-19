@@ -65,7 +65,12 @@ class GraphicsProgram3D:
         glViewport(0, 0, 800, 600)
         self.model_matrix.load_identity()
 
-        self.draw_pyramide(6)
+        self.model_matrix.push_matrix()
+        self.model_matrix.add_rotation(-20,'x')
+        self.model_matrix.add_rotation(-20,'y')
+        self.model_matrix.add_move(4, -5, -2)
+        self.draw_pyramide(10)
+        self.model_matrix.pop_matrix()
 
         pygame.display.flip()
 
@@ -80,12 +85,13 @@ class GraphicsProgram3D:
         self.model_matrix.pop_matrix()
 
     def draw_pyramide(self, num_bricks_base):
-        ty = -3
-        tz = -1
-        tx = -1
+        ty = 0
+        tz = 0
+        tx = 0
 
         for x in list(range(num_bricks_base, 0, -1)):
             tx = tx - x - 0.5
+
             for y in range(x):
                 # every other brick is red/blue
                 if (y % 2) == 0:
@@ -94,7 +100,6 @@ class GraphicsProgram3D:
                 else:
                     red = 0
                     blue = 1
-                
                 self.draw_cube(r = red, b = blue, tx = tx, ty = ty, tz = tz)
                 tx += 1
             ty += 1
