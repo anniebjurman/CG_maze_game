@@ -1,7 +1,9 @@
 
 # from OpenGL.GL import *
 # from OpenGL.GLU import *
+from array import ArrayType
 from math import *
+from pyclbr import Function
 
 import pygame
 from pygame.locals import *
@@ -60,17 +62,30 @@ class GraphicsProgram3D:
         glClear(GL_COLOR_BUFFER_BIT|GL_DEPTH_BUFFER_BIT)  ### --- YOU CAN ALSO CLEAR ONLY THE COLOR OR ONLY THE DEPTH --- ###
 
         glViewport(0, 0, 800, 600)
-
         self.model_matrix.load_identity()
 
+        #box 1
         self.model_matrix.push_matrix()
-        self.model_matrix.add_nothing()  ### --- ADD PROPER TRANSFORMATION OPERATIONS --- ###
+        self.model_matrix.add_move(1,1,0)
         self.shader.set_model_matrix(self.model_matrix.matrix)
+        self.shader.set_solid_color(1,0,0)
+        self.cube.draw(self.shader)
+        self.model_matrix.pop_matrix()
 
-        # change the color of the cube
-        self.shader.set_solid_color(0.2, 0.4, 0.9)
+        #box2
+        self.model_matrix.push_matrix()
+        self.model_matrix.add_scale(2,2,2)
+        self.shader.set_model_matrix(self.model_matrix.matrix)
+        self.shader.set_solid_color(0, 1, 0)
+        self.cube.draw(self.shader)
+        self.model_matrix.pop_matrix()
 
-
+        #box3
+        self.model_matrix.push_matrix()
+        self.model_matrix.add_move(2,1,0)
+        self.model_matrix.add_rotation(200, 'z')
+        self.shader.set_model_matrix(self.model_matrix.matrix)
+        self.shader.set_solid_color(0, 0, 1)
         self.cube.draw(self.shader)
         self.model_matrix.pop_matrix()
 

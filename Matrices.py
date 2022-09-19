@@ -1,5 +1,7 @@
 
-from math import * # trigonometry
+from math import *
+from re import X
+from xml.etree.ElementTree import PI # trigonometry
 
 from Base3DObjects import *
 
@@ -35,15 +37,44 @@ class ModelMatrix:
                 counter += 1
         self.matrix = new_matrix
 
-    def add_nothing(self):
-        other_matrix = [1, 0, 0, 0,
-                        0, 1, 0, 0,
-                        0, 0, 1, 0,
+    # OPERATIONS
+    def add_scale(self, x, y, z):
+        other_matrix = [x, 0, 0, 0,
+                        0, y, 0, 0,
+                        0, 0, z, 0,
                         0, 0, 0, 1]
         self.add_transformation(other_matrix)
 
-    ## MAKE OPERATIONS TO ADD TRANLATIONS, SCALES AND ROTATIONS ##
-    # ---
+    def add_move(self, x, y, z):
+        other_matrix = [1, 0, 0, x,
+                        0, 1, 0, y,
+                        0, 0, 1, z,
+                        0, 0, 0, 1]
+        self.add_transformation(other_matrix)
+
+    def add_rotation(self, angle, axis):
+        if axis == 'x':
+            other_matrix = [1, 0, 0, 0,
+                            0, math.cos(angle * math.pi / 180), -math.sin(angle * math.pi / 180), 0,
+                            0, math.sin(angle * math.pi / 180), math.cos(angle * math.pi / 180), 0,
+                            0, 0, 0, 1]
+        elif axis == 'y':
+            other_matrix = [math.cos(angle * math.pi / 180), 0, math.sin(angle * math.pi / 180), 0,
+                            0, 1, 0, 0,
+                            -math.sin(angle * math.pi / 180), 0, math.cos(angle * math.pi / 180), 0,
+                            0, 0, 0, 1]
+        elif axis == 'z':
+            other_matrix = [math.cos(angle * math.pi / 180), -math.sin(angle * math.pi / 180), 0, 0,
+                            math.sin(angle * math.pi / 180), math.cos(angle * math.pi / 180), 0, 0,
+                            0, 0, 1, 0,
+                            0, 0, 0, 1]
+        else:
+            other_matrix = [1, 0, 0, 0,
+                            0, 1, 0, 0,
+                            0, 0, 1, 0,
+                            0, 0, 0, 1]
+
+        self.add_transformation(other_matrix)
 
     # YOU CAN TRY TO MAKE PUSH AND POP (AND COPY) LESS DEPENDANT ON GARBAGE COLLECTION
     # THAT CAN FIX SMOOTHNESS ISSUES ON SOME COMPUTERS
