@@ -10,6 +10,7 @@ from pygame.locals import *
 
 import sys
 import time
+import random
 
 from Shaders import *
 from Matrices import *
@@ -64,9 +65,7 @@ class GraphicsProgram3D:
         glViewport(0, 0, 800, 600)
         self.model_matrix.load_identity()
 
-        self.draw_cube(tx=-1, ty=-1, r=1)
-        self.draw_cube(tx=-0.5, sx=1, sy=1, g=1)
-        self.draw_cube(angle=200, axis='y', b=1)
+        self.draw_pyramide()
 
         pygame.display.flip()
 
@@ -79,6 +78,31 @@ class GraphicsProgram3D:
         self.shader.set_solid_color(r, g, b)
         self.cube.draw(self.shader)
         self.model_matrix.pop_matrix()
+
+    def draw_pyramide(self):
+        tx = -3
+        ty = 1
+        num_bricks = 6
+
+        tx_2 = -2.5
+
+        for x in range(num_bricks):
+            if (x % 2) == 0:
+                red = 1
+                blue = 0
+            else:
+                red = 0
+                blue = 1
+            
+            if x < num_bricks / 2:
+                self.draw_cube(r=red, b=blue, tx=tx)
+                tx +=1
+            elif x == num_bricks-1:
+                self.draw_cube(r=red, b=blue, tx=-2, ty=3)
+            else:
+                self.draw_cube(r=red, b=blue, tx=tx_2, ty=2)
+                tx_2 += 1
+
         
     def program_loop(self):
         exiting = False
