@@ -45,7 +45,7 @@ class ModelMatrix:
                         0, 0, 0, 1]
         self.add_transformation(other_matrix)
 
-    def add_move(self, x, y, z):
+    def add_translation(self, x, y, z):
         other_matrix = [1, 0, 0, x,
                         0, 1, 0, y,
                         0, 0, 1, z,
