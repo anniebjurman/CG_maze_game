@@ -68,19 +68,6 @@ class GraphicsProgram3D:
         glViewport(0, 0, 800, 600)
         self.model_matrix.load_identity()
 
-        self.model_matrix.push_matrix()
-        self.model_matrix.add_translation(-1, -1, -1)
-        self.model_matrix.add_rotation(-10, 'y')
-        self.draw_cube(sx = 6, sz = 3, sy = 0.1, color = [0.5, 0.5, 0.5])
-        self.model_matrix.push_matrix()
-
-        self.model_matrix.add_rotation(90, 'y')
-        self.model_matrix.add_translation(z = -1.5, x = 1.5, y = 1.5)
-        self.draw_pyramide(3, [0.9, 0.9, 0.9])
-        self.model_matrix.pop_matrix()
-
-        self.draw_cube()
-
         pygame.display.flip()
 
     def draw_cube(self, tx=1, ty=1, tz=1, sx=1, sy=1, sz= 1, angle=0, axis='', color=[1,1,1]):
@@ -106,6 +93,19 @@ class GraphicsProgram3D:
                 tx += 1
             ty += 1
 
+    def draw_scene(self):
+        self.model_matrix.push_matrix()
+        self.model_matrix.add_translation(-1, -1, -1)
+        self.model_matrix.add_rotation(-10, 'y')
+        self.draw_cube(sx = 6, sz = 3, sy = 0.1, color = [0.5, 0.5, 0.5])
+        self.model_matrix.push_matrix()
+
+        self.model_matrix.add_rotation(90, 'y')
+        self.model_matrix.add_translation(z = -1.5, x = 1.5, y = 1.5)
+        self.draw_pyramide(3, [0.9, 0.9, 0.9])
+        self.model_matrix.pop_matrix()
+
+        self.draw_cube()
         
     def program_loop(self):
         exiting = False
