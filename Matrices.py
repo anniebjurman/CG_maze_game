@@ -38,14 +38,14 @@ class ModelMatrix:
         self.matrix = new_matrix
 
     # OPERATIONS
-    def add_scale(self, x, y, z):
+    def add_scale(self, x = 1, y = 1, z = 1):
         other_matrix = [x, 0, 0, 0,
                         0, y, 0, 0,
                         0, 0, z, 0,
                         0, 0, 0, 1]
         self.add_transformation(other_matrix)
 
-    def add_translation(self, x, y, z):
+    def add_translation(self, x = 0, y = 0, z = 0):
         other_matrix = [1, 0, 0, x,
                         0, 1, 0, y,
                         0, 0, 1, z,

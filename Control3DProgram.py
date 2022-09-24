@@ -61,33 +61,39 @@ class GraphicsProgram3D:
         if self.white_background:
             glClearColor(1.0, 1.0, 1.0, 1.0)
         else:
-            glClearColor(0.0, 0.0, 0.0, 1.0)
+            glClearColor(0.1, 0.2, 0.2, 1.0)
+
         glClear(GL_COLOR_BUFFER_BIT|GL_DEPTH_BUFFER_BIT)  ### --- YOU CAN ALSO CLEAR ONLY THE COLOR OR ONLY THE DEPTH --- ###
 
         glViewport(0, 0, 800, 600)
         self.model_matrix.load_identity()
 
         self.model_matrix.push_matrix()
-        self.model_matrix.add_translation(4, -5, -2)
-        self.model_matrix.add_rotation(-20,'x')
-        self.model_matrix.add_rotation(-20,'y')
-        self.model_matrix.add_rotation(self.mouse_pos[0],'y')
-        self.draw_pyramide(4)
+        self.model_matrix.add_translation(-1, -1, -1)
+        self.model_matrix.add_rotation(-10, 'y')
+        self.draw_cube(sx = 6, sz = 3, sy = 0.1, color = [0.5, 0.5, 0.5])
+        self.model_matrix.push_matrix()
+
+        self.model_matrix.add_rotation(90, 'y')
+        self.model_matrix.add_translation(z = -1.5, x = 1.5, y = 1.5)
+        self.draw_pyramide(3, [0.9, 0.9, 0.9])
         self.model_matrix.pop_matrix()
+
+        self.draw_cube()
 
         pygame.display.flip()
 
-    def draw_cube(self, tx=1, ty=1, tz=1, sx=1, sy=1, sz= 1, angle=0, axis='', r=0, g=0, b=0):
+    def draw_cube(self, tx=1, ty=1, tz=1, sx=1, sy=1, sz= 1, angle=0, axis='', color=[1,1,1]):
         self.model_matrix.push_matrix()
         self.model_matrix.add_translation(tx,ty,tz)
         self.model_matrix.add_rotation(angle, axis)
         self.model_matrix.add_scale(sx, sy,sz)
         self.shader.set_model_matrix(self.model_matrix.matrix)
-        self.shader.set_solid_color(r, g, b)
+        self.shader.set_solid_color(color[0], color[1], color[2])
         self.cube.draw(self.shader)
         self.model_matrix.pop_matrix()
 
-    def draw_pyramide(self, num_bricks_base):
+    def draw_pyramide(self, num_bricks_base, color):
         ty = 0
         tz = 0
         tx = 0
@@ -96,14 +102,7 @@ class GraphicsProgram3D:
             tx = tx - x - 0.5
 
             for y in range(x):
-                # every other brick is red/blue
-                if (y % 2) == 0:
-                    red = 1
-                    blue = 0
-                else:
-                    red = 0
-                    blue = 1
-                self.draw_cube(r = red, b = blue, tx = tx, ty = ty, tz = tz)
+                self.draw_cube(color = color, tx = tx, ty = ty, tz = tz)
                 tx += 1
             ty += 1
 
@@ -128,8 +127,8 @@ class GraphicsProgram3D:
                     if event.key == K_UP:
                         self.UP_key_down = False
 
-                elif event.type == pygame.MOUSEMOTION:
-                    self.mouse_pos = pygame.mouse.get_pos()
+                # elif event.type == pygame.MOUSEMOTION:
+                #     self.mouse_pos = pygame.mouse.get_pos()
             
             self.update()
             self.display()
