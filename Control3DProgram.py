@@ -26,8 +26,15 @@ class GraphicsProgram3D:
 
         self.model_matrix = ModelMatrix()
 
-        self.projection_view_matrix = ProjectionViewMatrix()
-        self.shader.set_projection_view_matrix(self.projection_view_matrix.get_matrix())
+        # self.projection_view_matrix = ProjectionViewMatrix()
+        # self.shader.set_projection_view_matrix(self.projection_view_matrix.get_matrix())
+
+        self.projection_matrix = ProjectionMatrix()
+        self.projection_matrix.set_orthographic(-2, 2, -2, 2, 0.5, 10)
+        self.shader.set_projection_matrix(self.projection_matrix.get_matrix())
+
+        self.view_matrix = ViewMatrix()
+        self.shader.set_view_matrix(self.view_matrix.get_matrix())
 
         self.cube = Cube()
 
@@ -64,6 +71,11 @@ class GraphicsProgram3D:
             glClearColor(0.1, 0.2, 0.2, 1.0)
 
         glClear(GL_COLOR_BUFFER_BIT|GL_DEPTH_BUFFER_BIT)  ### --- YOU CAN ALSO CLEAR ONLY THE COLOR OR ONLY THE DEPTH --- ###
+
+        self.model_matrix.add_translation(-1,0,-3)
+        self.model_matrix.add_rotation(50, 'y')
+        self.model_matrix.add_rotation(50, 'x')
+        self.draw_cube()
 
         glViewport(0, 0, 800, 600)
         self.model_matrix.load_identity()

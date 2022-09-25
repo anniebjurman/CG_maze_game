@@ -5,6 +5,7 @@ from math import * # trigonometry
 import sys
 
 from Base3DObjects import *
+from Matrices import ProjectionMatrix
 
 class Shader3D:
     def __init__(self):
@@ -40,8 +41,11 @@ class Shader3D:
         # get ID for color variable
         self.colorLoc = glGetUniformLocation(self.renderingProgramID, "u_color") 
 
-        self.modelMatrixLoc			= glGetUniformLocation(self.renderingProgramID, "u_model_matrix")
-        self.projectionViewMatrixLoc			= glGetUniformLocation(self.renderingProgramID, "u_projection_view_matrix")
+        self.modelMatrixLoc = glGetUniformLocation(self.renderingProgramID, "u_model_matrix")
+        
+        # self.projectionViewMatrixLoc = glGetUniformLocation(self.renderingProgramID, "u_projection_view_matrix")
+        self.projectionMatrixLoc = glGetUniformLocation(self.renderingProgramID, "u_projection_matrix")
+        self.viewMatrixLoc = glGetUniformLocation(self.renderingProgramID, "u_view_matrix")
 
 
     def use(self):
@@ -54,8 +58,14 @@ class Shader3D:
     def set_model_matrix(self, matrix_array):
         glUniformMatrix4fv(self.modelMatrixLoc, 1, True, matrix_array)
 
-    def set_projection_view_matrix(self, matrix_array):
-        glUniformMatrix4fv(self.projectionViewMatrixLoc, 1, True, matrix_array)
+    # def set_projection_view_matrix(self, matrix_array):
+    #     glUniformMatrix4fv(self.projectionViewMatrixLoc, 1, True, matrix_array)
+
+    def set_projection_matrix(self, matrix_array):
+        glUniformMatrix4fv(self.projectionMatrixLoc, 1, True, matrix_array)
+
+    def set_view_matrix(self, matrix_array):
+        glUniformMatrix4fv(self.viewMatrixLoc, 1, True, matrix_array)
 
     def set_position_attribute(self, vertex_array):
         glVertexAttribPointer(self.positionLoc, 3, GL_FLOAT, False, 0, vertex_array)
