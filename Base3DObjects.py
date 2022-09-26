@@ -20,6 +20,9 @@ class Point:
 
     def __sub__(self, other):
         return Vector(self.x - other.x, self.y - other.y, self.z - other.z)
+    
+    def to_string(self):
+        return "(" + str(self.x) + ", " + str(self.y) + ", " + str(self.z) + ")"
 
 class Vector:
     def __init__(self, x, y, z):
@@ -50,6 +53,9 @@ class Vector:
 
     def cross(self, other):
         return Vector(self.y*other.z - self.z*other.y, self.z*other.x - self.x*other.z, self.x*other.y - self.y*other.x)
+    
+    def to_string(self):
+        return "[" + str(self.x) + ", " + str(self.y) + ", " + str(self.z) + "]"
 
 class Cube:
     def __init__(self):

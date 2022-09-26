@@ -44,10 +44,9 @@ class GraphicsProgram3D:
         self.angle = 0
 
         self.UP_key_down = False  ## --- ADD CONTROLS FOR OTHER KEYS TO CONTROL THE CAMERA --- ##
-
-        self.white_background = False
-
-        self.mouse_pos = None
+        self.UP_key_up = False
+        self.UP_key_right = False
+        self.UP_key_left = False
 
     def update(self):
         delta_time = self.clock.tick() / 1000.0
@@ -56,20 +55,16 @@ class GraphicsProgram3D:
         # if angle > 2 * pi:
         #     angle -= (2 * pi)
 
-        if self.UP_key_down:
-            self.white_background = True
-        else:
-            self.white_background = False
+        if self.UP_key_up:
+            print("Before pitch:\n" + self.view_matrix.to_string())
+            self.view_matrix.pitch(self.angle)
+            print("After pitch:\n" + self.view_matrix.to_string())
+            self.shader.set_view_matrix(self.view_matrix)
     
 
     def display(self):
         glEnable(GL_DEPTH_TEST)  ### --- NEED THIS FOR NORMAL 3D BUT MANY EFFECTS BETTER WITH glDisable(GL_DEPTH_TEST) ... try it! --- ###
-
-        if self.white_background:
-            glClearColor(1.0, 1.0, 1.0, 1.0)
-        else:
-            glClearColor(0.1, 0.2, 0.2, 1.0)
-
+        glClearColor(0.1, 0.2, 0.2, 1.0)
         glClear(GL_COLOR_BUFFER_BIT|GL_DEPTH_BUFFER_BIT)  ### --- YOU CAN ALSO CLEAR ONLY THE COLOR OR ONLY THE DEPTH --- ###
 
         self.model_matrix.add_translation(-1,0,-3)
@@ -130,17 +125,25 @@ class GraphicsProgram3D:
                 elif event.type == pygame.KEYDOWN:
                     if event.key == K_ESCAPE:
                         print("Escaping!")
-                        exiting = True
-                        
-                    if event.key == K_UP:
+                        exiting = True   
+                    elif event.key == K_UP:
+                        self.UP_key_up = True
+                    elif event.key == K_DOWN:
                         self.UP_key_down = True
+                    elif event.key == K_RIGHT:
+                        self.UP_key_right = True
+                    elif event.key == K_LEFT:
+                        self.UP_key_left = True
 
                 elif event.type == pygame.KEYUP:
                     if event.key == K_UP:
                         self.UP_key_down = False
-
-                # elif event.type == pygame.MOUSEMOTION:
-                #     self.mouse_pos = pygame.mouse.get_pos()
+                    elif event.key == K_DOWN:
+                        self.UP_key_down = False
+                    elif event.key == K_RIGHT:
+                        self.UP_key_right = False
+                    elif event.key == K_LEFT:
+                        self.UP_key_left = False
             
             self.update()
             self.display()
