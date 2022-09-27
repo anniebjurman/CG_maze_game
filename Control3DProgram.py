@@ -56,6 +56,8 @@ class GraphicsProgram3D:
 
         self.UP_key_q = False
         self.UP_key_e = False
+        self.UP_key_r = False
+        self.UP_key_f = False
 
     def update(self):
         delta_time = self.clock.tick() / 1000.0
@@ -65,6 +67,8 @@ class GraphicsProgram3D:
             self.angle -= (2 * pi)
 
         tmp = self.angle / 100 # to controll the speed, better way of doing it?
+         
+        # set view_matrix after checking all the ifs? but it's only nessecery to set when something has changed
 
         # WORKS
         if self.UP_key_up:
@@ -73,36 +77,40 @@ class GraphicsProgram3D:
         if self.UP_key_down:
             self.view_matrix.pitch(-tmp)
             self.shader.set_view_matrix(self.view_matrix.get_matrix())
-
-        # WORKS
         if self.UP_key_right:
             self.view_matrix.yaw(tmp)
             self.shader.set_view_matrix(self.view_matrix.get_matrix())
         if self.UP_key_left:
             self.view_matrix.yaw(-tmp)
             self.shader.set_view_matrix(self.view_matrix.get_matrix())
+
+        tmp2 = 0.001
+        if self.UP_key_w:
+            self.view_matrix.slide(0, 0, -tmp2)
+            self.shader.set_view_matrix(self.view_matrix.get_matrix())
+        if self.UP_key_s:
+            self.view_matrix.slide(0, 0, tmp2)
+            self.shader.set_view_matrix(self.view_matrix.get_matrix())
+        # WORKS
+        if self.UP_key_a:
+            self.view_matrix.slide(-tmp2, 0, 0)
+            self.shader.set_view_matrix(self.view_matrix.get_matrix())
+        if self.UP_key_d:
+            self.view_matrix.slide(tmp2, 0, 0)
+            self.shader.set_view_matrix(self.view_matrix.get_matrix())
         
         # WORKS
-        # set view_matrix after checking all the ifs? but it's only nessecery to set when something has changed
         if self.UP_key_e:
             self.view_matrix.roll(-tmp)
             self.shader.set_view_matrix(self.view_matrix.get_matrix())
         if self.UP_key_q:
             self.view_matrix.roll(tmp)
             self.shader.set_view_matrix(self.view_matrix.get_matrix())
-
-        tmp2 = 0.001
-        if self.UP_key_w:
+        if self.UP_key_r:
             self.view_matrix.slide(0, tmp2, 0)
             self.shader.set_view_matrix(self.view_matrix.get_matrix())
-        if self.UP_key_s:
+        if self.UP_key_f:
             self.view_matrix.slide(0, -tmp2, 0)
-            self.shader.set_view_matrix(self.view_matrix.get_matrix())
-        if self.UP_key_a:
-            self.view_matrix.slide(-tmp2, 0, 0)
-            self.shader.set_view_matrix(self.view_matrix.get_matrix())
-        if self.UP_key_d:
-            self.view_matrix.slide(tmp2, 0, 0)
             self.shader.set_view_matrix(self.view_matrix.get_matrix())
 
     def display(self):
@@ -193,6 +201,10 @@ class GraphicsProgram3D:
                     elif event.key == K_d:
                         self.UP_key_d = True
 
+                    elif event.key == K_r:
+                        self.UP_key_r = True
+                    elif event.key == K_f:
+                        self.UP_key_f = True
                     elif event.key == K_q:
                         self.UP_key_q = True
                     elif event.key == K_e:
@@ -217,6 +229,10 @@ class GraphicsProgram3D:
                     elif event.key == K_d:
                         self.UP_key_d = False
 
+                    elif event.key == K_r:
+                        self.UP_key_r = False
+                    elif event.key == K_f:
+                        self.UP_key_f = False
                     elif event.key == K_q:
                         self.UP_key_q = False
                     elif event.key == K_e:
