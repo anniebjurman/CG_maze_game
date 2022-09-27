@@ -114,52 +114,55 @@ class ViewMatrix:
     def look(self, eye: Vector, center: Vector, up: Vector):
         self.eye = eye
         self.n = Vector(eye[0] - center[0], eye[1] - center[1], eye[2] - center[2])
-        self.u= up.cross(self.n)
-        self.v= self.n.cross(self.u)
+        self.u = up.cross(self.n)
+        self.v = self.n.cross(self.u)
     
-    def slide(self, del_u, del_v, del_n):
+    def slide(self, del_u, del_v, del_n): # works!
         self.eye.x += del_u * self.u.x + del_v * self.v.x + del_n * self.n.x;
         self.eye.y += del_u * self.u.y + del_v * self.v.y + del_n* self.n.y;
         self.eye.z += del_u * self.u.z + del_v * self.v.z + del_n * self.n.z;
 
+    # rotate camera about the n-axis
     def roll(self, angle):
-        ang_cos = cos(angle * math.pi/180)
-        ang_sin = sin(angle * math.pi/180)
+        ang_cos = cos(angle * math.pi/180.0)
+        ang_sin = sin(angle * math.pi/180.0)
         u_org = self.u # store original u
 
-        self.u = Vector(ang_cos * u_org.x - ang_sin * self.v.x,
-                        ang_cos * u_org.y - ang_sin * self.v.y,
-                        ang_cos * u_org.z - ang_sin * self.v.z)
+        self.u = Vector(ang_cos * u_org.x + ang_sin * self.v.x,
+                        ang_cos * u_org.y + ang_sin * self.v.y,
+                        ang_cos * u_org.z + ang_sin * self.v.z)
 
-        self.v = Vector(ang_sin * u_org.x - ang_cos * self.v.x,
-                        ang_sin * u_org.y - ang_cos * self.v.y,
-                        ang_sin * u_org.z - ang_cos * self.v.z)
+        self.v = Vector(- ang_sin * u_org.x + ang_cos * self.v.x,
+                        - ang_sin * u_org.y + ang_cos * self.v.y,
+                        - ang_sin * u_org.z + ang_cos * self.v.z)
 
+    # rotate camera about the u-axis
     def pitch(self, angle):
-        ang_cos = cos(angle * math.pi/180)
-        ang_sin = sin(angle * math.pi/180)
-        u_org = self.u # store original u
-        
-        self.u = Vector(ang_cos * u_org.x - ang_sin * self.n.x,
-                        ang_cos * u_org.y - ang_sin * self.n.y,
-                        ang_cos * u_org.z - ang_sin * self.n.z)
-
-        self.n = Vector(ang_sin * u_org.x - ang_cos * self.n.x,
-                        ang_sin * u_org.y - ang_cos * self.n.y,
-                        ang_sin * u_org.z - ang_cos * self.n.z)
-
-    def yaw(self, angle):
-        ang_cos = cos(angle * math.pi/180)
-        ang_sin = sin(angle * math.pi/180)
+        ang_cos = cos(angle * math.pi/180.0)
+        ang_sin = sin(angle * math.pi/180.0)
         n_org = self.n # store original n
         
-        self.n = Vector(ang_cos * n_org.x - ang_sin * self.n.x,
-                        ang_cos * n_org.y - ang_sin * self.n.y,
-                        ang_cos * n_org.z - ang_sin * self.n.z)
+        self.n = Vector(ang_cos * n_org.x + ang_sin * self.v.x,
+                        ang_cos * n_org.y + ang_sin * self.v.y,
+                        ang_cos * n_org.z + ang_sin * self.v.z)
 
-        self.v = Vector(ang_sin * n_org.x - ang_cos * self.n.x,
-                        ang_sin * n_org.y - ang_cos * self.n.y,
-                        ang_sin * n_org.z - ang_cos * self.n.z)
+        self.v = Vector(- ang_sin * n_org.x + ang_cos * self.v.x,
+                        - ang_sin * n_org.y + ang_cos * self.v.y,
+                        - ang_sin * n_org.z + ang_cos * self.v.z)
+
+    # rotate camera about the v-axis
+    def yaw(self, angle):
+        ang_cos = cos(angle * math.pi/180.0)
+        ang_sin = sin(angle * math.pi/180.0)
+        n_org = self.n # store original n
+        
+        self.n = Vector(ang_cos * n_org.x + ang_sin * self.u.x,
+                        ang_cos * n_org.y + ang_sin * self.u.y,
+                        ang_cos * n_org.z + ang_sin * self.u.z)
+
+        self.u = Vector(- ang_sin * n_org.x + ang_cos * self.u.x,
+                        - ang_sin * n_org.y + ang_cos * self.u.y,
+                        - ang_sin * n_org.z + ang_cos * self.u.z)
 
     def get_matrix(self):
         minusEye = Vector(-self.eye.x, -self.eye.y, -self.eye.z)
@@ -169,6 +172,13 @@ class ViewMatrix:
                 0,        0,        0,        1]
     
     def to_string(self):
+        matrix = self.get_matrix()
+        string = "[ " + str(matrix[0]) + ", " + str(matrix[1]) + ", " + str(matrix[2]) + ", " + str(matrix[3]) + ",\n" \
+                      + str(matrix[4]) + ", " + str(matrix[5]) + ", " + str(matrix[6]) + ", " + str(matrix[7]) + ",\n" \
+                      + str(matrix[8]) + ", " + str(matrix[9]) + ", " + str(matrix[10]) + ", " + str(matrix[11]) + " ]"
+        return string
+    
+    def values_to_string(self):
         return "View matrix:\n" + "\teye: " + self.eye.to_string() + "\n\tu: " + \
                 self.u.to_string() + "\n\tn: " + self.n.to_string() + "\n\tv: " + \
                 self.v.to_string()

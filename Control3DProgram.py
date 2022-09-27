@@ -43,41 +43,88 @@ class GraphicsProgram3D:
 
         self.angle = 0
 
-        self.UP_key_down = False  ## --- ADD CONTROLS FOR OTHER KEYS TO CONTROL THE CAMERA --- ##
+        ## --- CONTROLS FOR KEYS TO CONTROL THE CAMERA --- ##
+        self.UP_key_down = False
         self.UP_key_up = False
         self.UP_key_right = False
         self.UP_key_left = False
+
+        self.UP_key_w = False
+        self.UP_key_s = False
+        self.UP_key_a = False
+        self.UP_key_d = False
+
+        self.UP_key_q = False
+        self.UP_key_e = False
 
     def update(self):
         delta_time = self.clock.tick() / 1000.0
 
         self.angle += pi * delta_time
-        # if angle > 2 * pi:
-        #     angle -= (2 * pi)
+        if self.angle > 2 * pi:
+            self.angle -= (2 * pi)
 
+        tmp = self.angle / 100 # to controll the speed, better way of doing it?
+
+        # WORKS
         if self.UP_key_up:
-            print("Before pitch:\n" + self.view_matrix.to_string())
-            self.view_matrix.pitch(self.angle)
-            print("After pitch:\n" + self.view_matrix.to_string())
-            self.shader.set_view_matrix(self.view_matrix)
-    
+            self.view_matrix.pitch(tmp)
+            self.shader.set_view_matrix(self.view_matrix.get_matrix())
+        if self.UP_key_down:
+            self.view_matrix.pitch(-tmp)
+            self.shader.set_view_matrix(self.view_matrix.get_matrix())
+
+        # WORKS
+        if self.UP_key_right:
+            self.view_matrix.yaw(tmp)
+            self.shader.set_view_matrix(self.view_matrix.get_matrix())
+        if self.UP_key_left:
+            self.view_matrix.yaw(-tmp)
+            self.shader.set_view_matrix(self.view_matrix.get_matrix())
+        
+        # WORKS
+        # set view_matrix after all ifs? but it's only nessecery to set when something has changed
+        if self.UP_key_e:
+            self.view_matrix.roll(-tmp)
+            self.shader.set_view_matrix(self.view_matrix.get_matrix())
+        if self.UP_key_q:
+            self.view_matrix.roll(tmp)
+            self.shader.set_view_matrix(self.view_matrix.get_matrix())
+
+        if self.UP_key_w:
+            self.view_matrix.slide(0, 0, -0.001)
+            self.shader.set_view_matrix(self.view_matrix.get_matrix())
+        if self.UP_key_s:
+            self.view_matrix.slide(0, 0, 1)
+            self.shader.set_view_matrix(self.view_matrix.get_matrix())
+        if self.UP_key_a:
+            self.view_matrix.slide(1, 0, 0)
+            self.shader.set_view_matrix(self.view_matrix.get_matrix())
+        if self.UP_key_d:
+            self.view_matrix.slide(-1, 0, 0)
+            self.shader.set_view_matrix(self.view_matrix.get_matrix())
 
     def display(self):
         glEnable(GL_DEPTH_TEST)  ### --- NEED THIS FOR NORMAL 3D BUT MANY EFFECTS BETTER WITH glDisable(GL_DEPTH_TEST) ... try it! --- ###
         glClearColor(0.1, 0.2, 0.2, 1.0)
         glClear(GL_COLOR_BUFFER_BIT|GL_DEPTH_BUFFER_BIT)  ### --- YOU CAN ALSO CLEAR ONLY THE COLOR OR ONLY THE DEPTH --- ###
 
-        self.model_matrix.add_translation(-1,0,-3)
-        self.model_matrix.add_rotation(50, 'y')
+        self.model_matrix.push_matrix()
+        self.model_matrix.add_translation(0, 0, -3)
         self.model_matrix.add_rotation(50, 'x')
-        self.draw_cube()
+        self.model_matrix.add_rotation(50, 'y')
+        self.model_matrix.add_scale(0.5, 0.5, 0.5)
+        self.shader.set_model_matrix(self.model_matrix.matrix)
+        self.shader.set_solid_color(1,1,1)
+        self.cube.draw(self.shader)
+        self.model_matrix.pop_matrix()
 
         glViewport(0, 0, 800, 600)
         self.model_matrix.load_identity()
 
         pygame.display.flip()
 
-    def draw_cube(self, tx=1, ty=1, tz=1, sx=1, sy=1, sz= 1, angle=0, axis='', color=[1,1,1]):
+    def draw_cube(self, tx=0, ty=0, tz=0, sx=1, sy=1, sz= 1, angle=0, axis='', color=[1,1,1]):
         self.model_matrix.push_matrix()
         self.model_matrix.add_translation(tx,ty,tz)
         self.model_matrix.add_rotation(angle, axis)
@@ -122,6 +169,7 @@ class GraphicsProgram3D:
                 if event.type == pygame.QUIT:
                     print("Quitting!")
                     exiting = True
+
                 elif event.type == pygame.KEYDOWN:
                     if event.key == K_ESCAPE:
                         print("Escaping!")
@@ -135,15 +183,43 @@ class GraphicsProgram3D:
                     elif event.key == K_LEFT:
                         self.UP_key_left = True
 
+                    elif event.key == K_w:
+                        self.UP_key_w = True
+                    elif event.key == K_s:
+                        self.UP_key_s = True
+                    elif event.key == K_a:
+                        self.UP_key_a = True
+                    elif event.key == K_d:
+                        self.UP_key_d = True
+
+                    elif event.key == K_q:
+                        self.UP_key_q = True
+                    elif event.key == K_e:
+                        self.UP_key_e = True
+
                 elif event.type == pygame.KEYUP:
                     if event.key == K_UP:
-                        self.UP_key_down = False
+                        self.UP_key_up = False
                     elif event.key == K_DOWN:
                         self.UP_key_down = False
                     elif event.key == K_RIGHT:
                         self.UP_key_right = False
                     elif event.key == K_LEFT:
                         self.UP_key_left = False
+                    
+                    elif event.key == K_w:
+                        self.UP_key_w = False
+                    elif event.key == K_s:
+                        self.UP_key_s = False
+                    elif event.key == K_a:
+                        self.UP_key_a = False
+                    elif event.key == K_d:
+                        self.UP_key_d = False
+
+                    elif event.key == K_q:
+                        self.UP_key_q = False
+                    elif event.key == K_e:
+                        self.UP_key_e = False
             
             self.update()
             self.display()
