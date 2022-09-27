@@ -83,7 +83,7 @@ class GraphicsProgram3D:
             self.shader.set_view_matrix(self.view_matrix.get_matrix())
         
         # WORKS
-        # set view_matrix after all ifs? but it's only nessecery to set when something has changed
+        # set view_matrix after checking all the ifs? but it's only nessecery to set when something has changed
         if self.UP_key_e:
             self.view_matrix.roll(-tmp)
             self.shader.set_view_matrix(self.view_matrix.get_matrix())
@@ -91,17 +91,18 @@ class GraphicsProgram3D:
             self.view_matrix.roll(tmp)
             self.shader.set_view_matrix(self.view_matrix.get_matrix())
 
+        tmp2 = 0.001
         if self.UP_key_w:
-            self.view_matrix.slide(0, 0, -0.001)
+            self.view_matrix.slide(0, tmp2, 0)
             self.shader.set_view_matrix(self.view_matrix.get_matrix())
         if self.UP_key_s:
-            self.view_matrix.slide(0, 0, 1)
+            self.view_matrix.slide(0, -tmp2, 0)
             self.shader.set_view_matrix(self.view_matrix.get_matrix())
         if self.UP_key_a:
-            self.view_matrix.slide(1, 0, 0)
+            self.view_matrix.slide(-tmp2, 0, 0)
             self.shader.set_view_matrix(self.view_matrix.get_matrix())
         if self.UP_key_d:
-            self.view_matrix.slide(-1, 0, 0)
+            self.view_matrix.slide(tmp2, 0, 0)
             self.shader.set_view_matrix(self.view_matrix.get_matrix())
 
     def display(self):
