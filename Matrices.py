@@ -118,9 +118,14 @@ class ViewMatrix:
         self.v = self.n.cross(self.u)
     
     def slide(self, del_u, del_v, del_n): # works!
-        self.eye.x += del_u * self.u.x + del_v * self.v.x + del_n * self.n.x;
-        self.eye.y += del_u * self.u.y + del_v * self.v.y + del_n* self.n.y;
-        self.eye.z += del_u * self.u.z + del_v * self.v.z + del_n * self.n.z;
+        self.eye.x += del_u * self.u.x + del_v * self.v.x + del_n * self.n.x
+        self.eye.y += del_u * self.u.y + del_v * self.v.y + del_n* self.n.y
+        self.eye.z += del_u * self.u.z + del_v * self.v.z + del_n * self.n.z
+    
+    # not change the or use the y-coordinates of the camera’s coordinate frame.
+    def walk(self, del_u, del_v, del_n):
+        self.eye.x += del_u * self.u.x + del_v * self.v.x + del_n * self.n.x
+        self.eye.z += del_u * self.u.z + del_v * self.v.z + del_n * self.n.z
 
     # rotate camera about the n-axis
     def roll(self, angle):
@@ -163,6 +168,20 @@ class ViewMatrix:
         self.u = Vector(- ang_sin * n_org.x + ang_cos * self.u.x,
                         - ang_sin * n_org.y + ang_cos * self.u.y,
                         - ang_sin * n_org.z + ang_cos * self.u.z)
+
+    # rotate all the vectors (u, v and n) about the base y-axis
+    # def turn(self, angle):
+    #     ang_cos = cos(angle * math.pi/180.0)
+    #     ang_sin = sin(angle * math.pi/180.0)
+    #     n_org = self.n # store original n
+        
+    #     self.n = Vector(ang_cos * n_org.x + ang_sin * self.u.x,
+    #                     ang_cos * n_org.y + ang_sin * self.u.y,
+    #                     ang_cos * n_org.z + ang_sin * self.u.z)
+
+    #     self.u = Vector(- ang_sin * n_org.x + ang_cos * self.u.x,
+    #                     - ang_sin * n_org.y + ang_cos * self.u.y,
+    #                     - ang_sin * n_org.z + ang_cos * self.u.z)
 
     def get_matrix(self):
         minusEye = Vector(-self.eye.x, -self.eye.y, -self.eye.z)

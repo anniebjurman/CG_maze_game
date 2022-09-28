@@ -72,16 +72,16 @@ class GraphicsProgram3D:
 
         # WORKS
         if self.UP_key_up:
-            self.view_matrix.pitch(tmp)
-            self.shader.set_view_matrix(self.view_matrix.get_matrix())
-        if self.UP_key_down:
             self.view_matrix.pitch(-tmp)
             self.shader.set_view_matrix(self.view_matrix.get_matrix())
+        if self.UP_key_down:
+            self.view_matrix.pitch(tmp)
+            self.shader.set_view_matrix(self.view_matrix.get_matrix())
         if self.UP_key_right:
-            self.view_matrix.yaw(tmp)
+            self.view_matrix.yaw(-tmp)
             self.shader.set_view_matrix(self.view_matrix.get_matrix())
         if self.UP_key_left:
-            self.view_matrix.yaw(-tmp)
+            self.view_matrix.yaw(tmp)
             self.shader.set_view_matrix(self.view_matrix.get_matrix())
 
         tmp2 = 0.001
@@ -93,19 +93,22 @@ class GraphicsProgram3D:
             self.shader.set_view_matrix(self.view_matrix.get_matrix())
         # WORKS
         if self.UP_key_a:
-            self.view_matrix.slide(-tmp2, 0, 0)
+            self.view_matrix.walk(-tmp2, 0, 0)
             self.shader.set_view_matrix(self.view_matrix.get_matrix())
         if self.UP_key_d:
-            self.view_matrix.slide(tmp2, 0, 0)
+            self.view_matrix.walk(tmp2, 0, 0)
             self.shader.set_view_matrix(self.view_matrix.get_matrix())
         
         # WORKS
+        # Remove these if player is a person walking, roll is not natural
         if self.UP_key_e:
             self.view_matrix.roll(-tmp)
             self.shader.set_view_matrix(self.view_matrix.get_matrix())
         if self.UP_key_q:
             self.view_matrix.roll(tmp)
             self.shader.set_view_matrix(self.view_matrix.get_matrix())
+        
+        # Remove these if player is walking on a floor
         if self.UP_key_r:
             self.view_matrix.slide(0, tmp2, 0)
             self.shader.set_view_matrix(self.view_matrix.get_matrix())
