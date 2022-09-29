@@ -122,6 +122,8 @@ class GraphicsProgram3D:
         glEnable(GL_DEPTH_TEST)  ### --- NEED THIS FOR NORMAL 3D BUT MANY EFFECTS BETTER WITH glDisable(GL_DEPTH_TEST) ... try it! --- ###
         glClearColor(0.1, 0.2, 0.2, 1.0)
         glClear(GL_COLOR_BUFFER_BIT|GL_DEPTH_BUFFER_BIT)  ### --- YOU CAN ALSO CLEAR ONLY THE COLOR OR ONLY THE DEPTH --- ###
+        self.shader.set_light_position(Point(1,1,2))
+        self.shader.set_light_diffuse(1, 1, 1)
 
         self.model_matrix.push_matrix()
         self.model_matrix.add_translation(0, 0, -3)
@@ -129,7 +131,7 @@ class GraphicsProgram3D:
         self.model_matrix.add_rotation(50, 'y')
         self.model_matrix.add_scale(0.5, 0.5, 0.5)
         self.shader.set_model_matrix(self.model_matrix.matrix)
-        self.shader.set_solid_color(1,1,1)
+        self.shader.set_material_diffuse(1, 1, 0.7)
         self.cube.draw(self.shader)
         self.model_matrix.pop_matrix()
 
@@ -139,7 +141,7 @@ class GraphicsProgram3D:
         self.model_matrix.add_rotation(50, 'y')
         self.model_matrix.add_scale(0.5, 0.5, 0.5)
         self.shader.set_model_matrix(self.model_matrix.matrix)
-        self.shader.set_solid_color(0,0.5,0.9)
+        self.shader.set_material_diffuse(0, 0.5, 0.9)
         self.cube.draw(self.shader)
         self.model_matrix.pop_matrix()
 

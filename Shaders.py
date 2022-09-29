@@ -38,12 +38,12 @@ class Shader3D:
         self.normalLoc = glGetAttribLocation(self.renderingProgramID, "a_normal") 
         glEnableVertexAttribArray(self.normalLoc) 
 
-        # get ID for color variable
-        self.colorLoc = glGetUniformLocation(self.renderingProgramID, "u_color") 
+        self.lightPosLoc = glGetUniformLocation(self.renderingProgramID, "u_light_position")
+        self.lightDifLoc = glGetUniformLocation(self.renderingProgramID, "u_light_diffuse")
+        self.matDifLoc = glGetUniformLocation(self.renderingProgramID, "u_material_diffuse")
 
         self.modelMatrixLoc = glGetUniformLocation(self.renderingProgramID, "u_model_matrix")
         
-        # self.projectionViewMatrixLoc = glGetUniformLocation(self.renderingProgramID, "u_projection_view_matrix")
         self.projectionMatrixLoc = glGetUniformLocation(self.renderingProgramID, "u_projection_matrix")
         self.viewMatrixLoc = glGetUniformLocation(self.renderingProgramID, "u_view_matrix")
 
@@ -58,9 +58,6 @@ class Shader3D:
     def set_model_matrix(self, matrix_array):
         glUniformMatrix4fv(self.modelMatrixLoc, 1, True, matrix_array)
 
-    # def set_projection_view_matrix(self, matrix_array):
-    #     glUniformMatrix4fv(self.projectionViewMatrixLoc, 1, True, matrix_array)
-
     def set_projection_matrix(self, matrix_array):
         glUniformMatrix4fv(self.projectionMatrixLoc, 1, True, matrix_array)
 
@@ -73,6 +70,12 @@ class Shader3D:
     def set_normal_attribute(self, vertex_array):
         glVertexAttribPointer(self.normalLoc, 3, GL_FLOAT, False, 0, vertex_array)
     
-    def set_solid_color(self, r, g, b): 
-        glUniform4f(self.colorLoc, r, g, b, 1.0)
+    def set_light_position(self, pos):
+        glUniform4f(self.lightPosLoc, pos.x, pos.y, pos.z, 1.0)
+
+    def set_light_diffuse(self, r, g, b):
+        glUniform4f(self.lightDifLoc, r, g, b, 1.0)
+
+    def set_material_diffuse(self, r, g, b):
+        glUniform4f(self.matDifLoc, r, g, b, 1.0)
 
