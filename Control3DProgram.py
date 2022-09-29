@@ -30,8 +30,9 @@ class GraphicsProgram3D:
         # self.shader.set_projection_view_matrix(self.projection_view_matrix.get_matrix())
 
         self.projection_matrix = ProjectionMatrix()
-        self.projection_matrix.set_orthographic(-2, 2, -2, 2, 0.5, 10)
+        self.projection_matrix.set_perspective(60, 1920/1080, 0.1, 10)
         self.shader.set_projection_matrix(self.projection_matrix.get_matrix())
+        
 
         self.view_matrix = ViewMatrix()
         self.shader.set_view_matrix(self.view_matrix.get_matrix())
@@ -66,7 +67,8 @@ class GraphicsProgram3D:
         if self.angle > 2 * pi:
             self.angle -= (2 * pi)
 
-        tmp = self.angle / 100 # to controll the speed, better way of doing it?
+        speed = 0.01 # to controll the speed, better way of doing it?
+        tmp = self.angle * speed 
          
         # set view_matrix after checking all the ifs? but it's only nessecery to set when something has changed
 
@@ -86,10 +88,10 @@ class GraphicsProgram3D:
 
         tmp2 = 0.001
         if self.UP_key_w:
-            self.view_matrix.slide(0, 0, -tmp2)
+            self.view_matrix.walk(0, 0, -tmp2)
             self.shader.set_view_matrix(self.view_matrix.get_matrix())
         if self.UP_key_s:
-            self.view_matrix.slide(0, 0, tmp2)
+            self.view_matrix.walk(0, 0, tmp2)
             self.shader.set_view_matrix(self.view_matrix.get_matrix())
         # WORKS
         if self.UP_key_a:
@@ -128,6 +130,16 @@ class GraphicsProgram3D:
         self.model_matrix.add_scale(0.5, 0.5, 0.5)
         self.shader.set_model_matrix(self.model_matrix.matrix)
         self.shader.set_solid_color(1,1,1)
+        self.cube.draw(self.shader)
+        self.model_matrix.pop_matrix()
+
+        self.model_matrix.push_matrix()
+        self.model_matrix.add_translation(0, 1, -5)
+        self.model_matrix.add_rotation(50, 'x')
+        self.model_matrix.add_rotation(50, 'y')
+        self.model_matrix.add_scale(0.5, 0.5, 0.5)
+        self.shader.set_model_matrix(self.model_matrix.matrix)
+        self.shader.set_solid_color(0,0.5,0.9)
         self.cube.draw(self.shader)
         self.model_matrix.pop_matrix()
 

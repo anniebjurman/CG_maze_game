@@ -1,5 +1,7 @@
 
+from curses.panel import top_panel
 from math import *
+# from turtle import right
 # from turtle import up
 # from xml.etree.ElementTree import PI # trigonometry
 
@@ -117,7 +119,7 @@ class ViewMatrix:
         self.u = up.cross(self.n)
         self.v = self.n.cross(self.u)
     
-    def slide(self, del_u, del_v, del_n): # works!
+    def slide(self, del_u, del_v, del_n):
         self.eye.x += del_u * self.u.x + del_v * self.v.x + del_n * self.n.x
         self.eye.y += del_u * self.u.y + del_v * self.v.y + del_n* self.n.y
         self.eye.z += del_u * self.u.z + del_v * self.v.z + del_n * self.n.z
@@ -221,13 +223,13 @@ class ProjectionMatrix:
     # ---
 
     def set_orthographic(self, left, right, bottom, top, near, far):
+        self.is_orthographic = True
         self.left = left
         self.right = right
         self.bottom = bottom
         self.top = top
         self.near = near
         self.far = far
-        self.is_orthographic = True
 
     def get_matrix(self):
         if self.is_orthographic:
@@ -242,12 +244,33 @@ class ProjectionMatrix:
                     0,C,0,D,
                     0,0,E,F,
                     0,0,0,1]
-
         else:
-            pass
-            # Set up a matrix for a Perspective projection
-            ###  Remember that it's a non-linear transformation   ###
-            ###  so the bottom row is different                   ###
+            # matrix for a Perspective projection
+            A = (2 * self.near) / (self.right - self.left)
+            B = (self.right + self.left) / (self.right - self.left)
+            C = (2 * self.near) / (self.top - self.bottom)
+            D = (self.top + self.bottom) / (self.top - self.bottom)
+            E = -(self.far + self.near) / (self.far - self.near)
+            F = -(2 * self.far * self.near) / (self.far - self.near)
+
+            matrix = [A, 0, B, 0,
+                    0, C, D, 0,
+                    0, 0, E, F,
+                    0, 0, -1, 0]
+            
+            print(matrix)
+            return matrix
+
+    def set_perspective(self, fov, aspect, near, far):
+        self.is_orthographic = False
+        fov_rad = (fov * math.pi) / 180.0
+
+        self.top = near * math.tan(fov_rad / 2)
+        self.bottom = -self.top
+        self.right = self.top * aspect
+        self.left = -self.right
+        self.near = near
+        self.far = far
 
 
 
