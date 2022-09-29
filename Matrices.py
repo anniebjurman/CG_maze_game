@@ -253,13 +253,10 @@ class ProjectionMatrix:
             E = -(self.far + self.near) / (self.far - self.near)
             F = -(2 * self.far * self.near) / (self.far - self.near)
 
-            matrix = [A, 0, B, 0,
+            return [A, 0, B, 0,
                     0, C, D, 0,
                     0, 0, E, F,
                     0, 0, -1, 0]
-            
-            print(matrix)
-            return matrix
 
     def set_perspective(self, fov, aspect, near, far):
         self.is_orthographic = False

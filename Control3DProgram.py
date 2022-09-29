@@ -44,6 +44,8 @@ class GraphicsProgram3D:
 
         self.angle = 0
 
+        self.light_pos = Point(0, 0, 0)
+
         ## --- CONTROLS FOR KEYS TO CONTROL THE CAMERA --- ##
         self.UP_key_down = False
         self.UP_key_up = False
@@ -59,6 +61,10 @@ class GraphicsProgram3D:
         self.UP_key_e = False
         self.UP_key_r = False
         self.UP_key_f = False
+
+        #light
+        self.UP_key_l = False
+        self.UP_key_k = False
 
     def update(self):
         delta_time = self.clock.tick() / 1000.0
@@ -117,12 +123,19 @@ class GraphicsProgram3D:
         if self.UP_key_f:
             self.view_matrix.slide(0, -tmp2, 0)
             self.shader.set_view_matrix(self.view_matrix.get_matrix())
+        
+        # move light
+        if self.UP_key_k:
+            self.light_pos.x -= 0.2 * delta_time
+        if self.UP_key_l:
+            self.light_pos.x += 0.2 * delta_time
+
 
     def display(self):
         glEnable(GL_DEPTH_TEST)  ### --- NEED THIS FOR NORMAL 3D BUT MANY EFFECTS BETTER WITH glDisable(GL_DEPTH_TEST) ... try it! --- ###
         glClearColor(0.1, 0.2, 0.2, 1.0)
         glClear(GL_COLOR_BUFFER_BIT|GL_DEPTH_BUFFER_BIT)  ### --- YOU CAN ALSO CLEAR ONLY THE COLOR OR ONLY THE DEPTH --- ###
-        self.shader.set_light_position(Point(1,1,2))
+        self.shader.set_light_position(self.light_pos)
         self.shader.set_light_diffuse(1, 1, 1)
 
         self.model_matrix.push_matrix()
@@ -226,6 +239,11 @@ class GraphicsProgram3D:
                         self.UP_key_q = True
                     elif event.key == K_e:
                         self.UP_key_e = True
+                    
+                    elif event.key == K_l:
+                        self.UP_key_l = True
+                    elif event.key == K_k:
+                        self.UP_key_k = True
 
                 elif event.type == pygame.KEYUP:
                     if event.key == K_UP:
@@ -254,6 +272,11 @@ class GraphicsProgram3D:
                         self.UP_key_q = False
                     elif event.key == K_e:
                         self.UP_key_e = False
+                    
+                    elif event.key == K_l:
+                        self.UP_key_l = False
+                    elif event.key == K_k:
+                        self.UP_key_k = False
             
             self.update()
             self.display()
