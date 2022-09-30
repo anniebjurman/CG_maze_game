@@ -26,13 +26,9 @@ class GraphicsProgram3D:
 
         self.model_matrix = ModelMatrix()
 
-        # self.projection_view_matrix = ProjectionViewMatrix()
-        # self.shader.set_projection_view_matrix(self.projection_view_matrix.get_matrix())
-
         self.projection_matrix = ProjectionMatrix()
         self.projection_matrix.set_perspective(60, 1920/1080, 0.1, 10)
         self.shader.set_projection_matrix(self.projection_matrix.get_matrix())
-        
 
         self.view_matrix = ViewMatrix()
         self.shader.set_view_matrix(self.view_matrix.get_matrix())
@@ -74,7 +70,7 @@ class GraphicsProgram3D:
             self.angle -= (2 * pi)
 
         speed = 0.01 # to controll the speed, better way of doing it?
-        tmp = self.angle * speed 
+        tmp = self.angle * speed
          
         # set view_matrix after checking all the ifs? but it's only nessecery to set when something has changed
 
@@ -140,7 +136,6 @@ class GraphicsProgram3D:
 
         self.model_matrix.push_matrix()
         self.model_matrix.add_translation(0, 0, -3)
-        self.model_matrix.add_rotation(50, 'x')
         self.model_matrix.add_rotation(50, 'y')
         self.model_matrix.add_scale(0.5, 0.5, 0.5)
         self.shader.set_model_matrix(self.model_matrix.matrix)
@@ -149,8 +144,7 @@ class GraphicsProgram3D:
         self.model_matrix.pop_matrix()
 
         self.model_matrix.push_matrix()
-        self.model_matrix.add_translation(0, 1, -5)
-        self.model_matrix.add_rotation(50, 'x')
+        self.model_matrix.add_translation(0, 0, -5)
         self.model_matrix.add_rotation(50, 'y')
         self.model_matrix.add_scale(0.5, 0.5, 0.5)
         self.shader.set_model_matrix(self.model_matrix.matrix)
