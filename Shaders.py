@@ -38,9 +38,9 @@ class Shader3D:
         self.normalLoc = glGetAttribLocation(self.renderingProgramID, "a_normal") 
         glEnableVertexAttribArray(self.normalLoc) 
 
-        self.lightPosLoc = glGetUniformLocation(self.renderingProgramID, "u_light_position")
-        self.lightDifLoc = glGetUniformLocation(self.renderingProgramID, "u_light_diffuse")
-        self.matDifLoc = glGetUniformLocation(self.renderingProgramID, "u_material_diffuse")
+        self.lightPosLoc = glGetUniformLocation(self.renderingProgramID, "u_light_1_position")
+        self.lightDifLoc = glGetUniformLocation(self.renderingProgramID, "u_light_1_diffuse")
+        self.matDifLoc = glGetUniformLocation(self.renderingProgramID, "u_material_1_diffuse")
 
         self.modelMatrixLoc = glGetUniformLocation(self.renderingProgramID, "u_model_matrix")
         
