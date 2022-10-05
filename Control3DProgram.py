@@ -34,7 +34,7 @@ class GraphicsProgram3D:
 
         self.view_matrix = ViewMatrix()
         self.cube = Cube()
-        
+
         self.clock = pygame.time.Clock()
         self.clock.tick()
 
@@ -79,6 +79,11 @@ class GraphicsProgram3D:
         self.view_matrix.eye = Point(self.maze.cell_width * self.maze.size / 2, 0.2, 0)
         self.shader.set_view_matrix(self.view_matrix.get_matrix())
 
+        # set camera to see the maze from above
+        # self.view_matrix.eye = Point(self.maze.cell_width * self.maze.size / 2, 5, -2)
+        # self.view_matrix.pitch(90)
+        # self.shader.set_view_matrix(self.view_matrix.get_matrix())
+
     def update(self):
         delta_time = self.clock.tick() / 1000.0
 
@@ -92,12 +97,12 @@ class GraphicsProgram3D:
         # set view_matrix after checking all the ifs? but it's only nessecery to set when something has changed
 
         # WORKS
-        # if self.UP_key_up:
-        #     self.view_matrix.pitch(-tmp)
-        #     self.shader.set_view_matrix(self.view_matrix.get_matrix())
-        # if self.UP_key_down:
-        #     self.view_matrix.pitch(tmp)
-        #     self.shader.set_view_matrix(self.view_matrix.get_matrix())
+        if self.UP_key_up:
+            self.view_matrix.pitch(-tmp)
+            self.shader.set_view_matrix(self.view_matrix.get_matrix())
+        if self.UP_key_down:
+            self.view_matrix.pitch(tmp)
+            self.shader.set_view_matrix(self.view_matrix.get_matrix())
         if self.UP_key_right:
             self.view_matrix.yaw(-tmp)
             self.shader.set_view_matrix(self.view_matrix.get_matrix())
@@ -143,6 +148,7 @@ class GraphicsProgram3D:
         self.shader.set_light_diffuse(1, 1, 1)
 
         self.draw_maze_base()
+        self.draw_maze_walls()
 
         glViewport(0, 0, 800, 600)
         self.model_matrix.load_identity()
@@ -151,13 +157,44 @@ class GraphicsProgram3D:
     
     def draw_maze_base(self):
         self.model_matrix.push_matrix()
-        self.model_matrix.add_translation(self.maze.cell_width * self.maze.size / 2, -0.1 / 2,
-                                         -self.maze.cell_width * self.maze.size / 2)
-        self.model_matrix.add_scale(self.maze.cell_width * self.maze.size, 0.1, self.maze.cell_width * self.maze.size)
+        trans_x_z = (self.maze.cell_width * self.maze.size / 2) - (self.maze.wall_thickness / 4)
+        self.model_matrix.add_translation(trans_x_z, -0.1 / 2, - trans_x_z)
+        scale_x_z = (self.maze.cell_width * self.maze.size) + (self.maze.wall_thickness / 2)
+        self.model_matrix.add_scale(scale_x_z, 0.1, scale_x_z)
         self.shader.set_model_matrix(self.model_matrix.matrix)
         self.shader.set_material_diffuse(0.4, 0.9, 0.8)
         self.cube.draw(self.shader)
         self.model_matrix.pop_matrix()
+    
+    def draw_maze_walls(self):
+        row_num = 0
+        col_num = 0
+        tot_depth = self.maze.size * self.maze.cell_width
+
+        for row in self.maze.maze:
+            for cell in row:
+                if cell.wall_west:
+                    self.model_matrix.push_matrix()
+                    self.model_matrix.add_translation(col_num * self.maze.cell_width, self.maze.wall_height / 2,
+                                                      - (tot_depth - (row_num * self.maze.cell_width) - self.maze.cell_width / 2))
+                    self.model_matrix.add_scale(self.maze.wall_thickness, self.maze.wall_height, self.maze.cell_width)
+                    self.shader.set_model_matrix(self.model_matrix.matrix)
+                    self.shader.set_material_diffuse(0.4, 0.8, 0.9)
+                    self.cube.draw(self.shader)
+                    self.model_matrix.pop_matrix()
+                if cell.wall_south:
+                    self.model_matrix.push_matrix()
+                    self.model_matrix.add_translation((col_num + 1) * self.maze.cell_width - self.maze.cell_width / 2, self.maze.wall_height / 2,
+                                                      - (tot_depth - (row_num + 1) * self.maze.cell_width))
+                    self.model_matrix.add_scale(self.maze.cell_width, self.maze.wall_height, self.maze.wall_thickness)
+                    self.shader.set_model_matrix(self.model_matrix.matrix)
+                    self.shader.set_material_diffuse(0.4, 0.8, 0.9)
+                    self.cube.draw(self.shader)
+                    self.model_matrix.pop_matrix()
+                col_num += 1
+            row_num += 1
+            col_num = 0
+
         
     def program_loop(self):
         exiting = False

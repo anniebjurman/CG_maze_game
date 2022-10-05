@@ -15,6 +15,8 @@ class Maze:
         self.maze = [[Cell() for _ in range(size)] for _ in range(size)]
 
         self.cell_width = 1
+        self.wall_thickness = 0.1
+        self.wall_height = 1
     
     def set_cell(self, cell, wall):
         if wall == 'south':
