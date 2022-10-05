@@ -30,14 +30,10 @@ class Maze:
                 cell.reset_cell()
     
     def set_small_3_maze(self):
-        self.set_cell([0,0], 'west')
         self.set_cell([0,0], 'south')
-        self.set_cell([1,1], 'south')
-        self.set_cell([0,1], 'west')
-        self.set_cell([0,2], 'south')
-        self.set_cell([2,1], 'south')
-        self.set_cell([2,2], 'west')
-        self.set_cell([1,0], 'south')
+        self.set_cell([0,1], 'south')
+        self.set_cell([1,2], 'west')
+        self.set_cell([2,1], 'west')
 
     def to_string(self):
         res = "__" * len(self.maze) + "__\n"
