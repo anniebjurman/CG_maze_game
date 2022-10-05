@@ -29,7 +29,7 @@ class GraphicsProgram3D:
         self.model_matrix = ModelMatrix()
 
         self.projection_matrix = ProjectionMatrix()
-        self.projection_matrix.set_perspective(60, 1920/1080, 0.1, 10)
+        self.projection_matrix.set_perspective(60, 1920/1080, 0.2, 10)
         self.shader.set_projection_matrix(self.projection_matrix.get_matrix())
 
         self.view_matrix = ViewMatrix()
@@ -67,22 +67,17 @@ class GraphicsProgram3D:
 
         # init maze
         self.maze = Maze(3)
-        self.maze.set_cell([0,0], 'west')
-        self.maze.set_cell([0,0], 'south')
-        self.maze.set_cell([1,1], 'south')
-        self.maze.set_cell([0,1], 'west')
-        self.maze.set_cell([0,2], 'south')
-        self.maze.set_cell([2,1], 'south')
+        self.maze.set_small_3_maze()
         print(self.maze.to_string())
 
         # set camera relative to maze base
-        self.view_matrix.eye = Point(self.maze.cell_width * self.maze.size / 2, 0.2, 0)
-        self.shader.set_view_matrix(self.view_matrix.get_matrix())
+        # self.view_matrix.eye = Point(self.maze.cell_width * self.maze.size / 2, 0.3, 1)
+        # self.shader.set_view_matrix(self.view_matrix.get_matrix())
 
         # set camera to see the maze from above
-        # self.view_matrix.eye = Point(self.maze.cell_width * self.maze.size / 2, 5, -2)
-        # self.view_matrix.pitch(90)
-        # self.shader.set_view_matrix(self.view_matrix.get_matrix())
+        self.view_matrix.eye = Point(self.maze.cell_width * self.maze.size / 2, 5, -1)
+        self.view_matrix.pitch(80)
+        self.shader.set_view_matrix(self.view_matrix.get_matrix())
 
     def update(self):
         delta_time = self.clock.tick() / 1000.0
@@ -213,7 +208,7 @@ class GraphicsProgram3D:
                     self.model_matrix.pop_matrix()
 
                 col_num += 1
-                
+
             row_num += 1
             col_num = 0
 
