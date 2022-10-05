@@ -11,11 +11,10 @@ class Cell:
     
 class Maze:
     def __init__(self, size):
-        self.maze_size = size
+        self.size = size
         self.maze = [[Cell() for _ in range(size)] for _ in range(size)]
 
         self.cell_width = 1
-        self.cell_height = 1
     
     def set_cell(self, cell, wall):
         if wall == 'south':
