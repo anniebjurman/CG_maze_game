@@ -35,7 +35,7 @@ class Shader3D:
         self.positionLoc = glGetAttribLocation(self.renderingProgramID, "a_position")
         glEnableVertexAttribArray(self.positionLoc)
         ## ADD CODE HERE ##
-        self.normalLoc = glGetAttribLocation(self.renderingProgramID, "a_normal") 
+        self.normalLoc = glGetAttribLocation(self.renderingProgramID, "a_normal")
         glEnableVertexAttribArray(self.normalLoc) 
 
         self.lightPosLoc = glGetUniformLocation(self.renderingProgramID, "u_light_position")

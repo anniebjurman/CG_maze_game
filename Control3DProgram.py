@@ -31,6 +31,7 @@ class GraphicsProgram3D:
         self.shader.set_projection_matrix(self.projection_matrix.get_matrix())
 
         self.view_matrix = ViewMatrix()
+        self.view_matrix.eye = Point(0, 0.4, 0)
         self.shader.set_view_matrix(self.view_matrix.get_matrix())
 
         self.cube = Cube()
@@ -40,7 +41,10 @@ class GraphicsProgram3D:
 
         self.angle = 0
 
-        self.light_pos = Point(0, 0, 0)
+        self.light_pos = Point(0, 5, 0)
+
+        # scene
+        self.scene_base = [10, 10, 0.2]
 
         ## --- CONTROLS FOR KEYS TO CONTROL THE CAMERA --- ##
         self.UP_key_down = False
@@ -105,12 +109,12 @@ class GraphicsProgram3D:
         
         # WORKS
         # Remove these if player is a person walking, roll is not natural
-        if self.UP_key_e:
-            self.view_matrix.roll(-tmp)
-            self.shader.set_view_matrix(self.view_matrix.get_matrix())
-        if self.UP_key_q:
-            self.view_matrix.roll(tmp)
-            self.shader.set_view_matrix(self.view_matrix.get_matrix())
+        # if self.UP_key_e:
+        #     self.view_matrix.roll(-tmp)
+        #     self.shader.set_view_matrix(self.view_matrix.get_matrix())
+        # if self.UP_key_q:
+        #     self.view_matrix.roll(tmp)
+        #     self.shader.set_view_matrix(self.view_matrix.get_matrix())
         
         # Remove these if player is walking on a floor
         if self.UP_key_r:
@@ -134,21 +138,28 @@ class GraphicsProgram3D:
         self.shader.set_light_position(self.light_pos)
         self.shader.set_light_diffuse(1, 1, 1)
 
+        #base
         self.model_matrix.push_matrix()
-        self.model_matrix.add_translation(0, 0, -3)
-        self.model_matrix.add_rotation(50, 'y')
-        self.model_matrix.add_scale(0.5, 0.5, 0.5)
+        self.model_matrix.add_translation(0, 0.1, 0)
+        self.model_matrix.add_scale(10, 0.2, 10)
         self.shader.set_model_matrix(self.model_matrix.matrix)
-        self.shader.set_material_diffuse(1, 1, 0.7)
+        self.shader.set_material_diffuse(1, 1, 1)
         self.cube.draw(self.shader)
         self.model_matrix.pop_matrix()
 
         self.model_matrix.push_matrix()
-        self.model_matrix.add_translation(0, 0, -5)
-        self.model_matrix.add_rotation(50, 'y')
+        self.model_matrix.add_translation(0, 0.4, -3)
         self.model_matrix.add_scale(0.5, 0.5, 0.5)
         self.shader.set_model_matrix(self.model_matrix.matrix)
-        self.shader.set_material_diffuse(0, 0.5, 0.9)
+        self.shader.set_material_diffuse(0.9, 0.9, 0.9)
+        self.cube.draw(self.shader)
+        self.model_matrix.pop_matrix()
+
+        self.model_matrix.push_matrix()
+        self.model_matrix.add_translation(0, 0.4, -5)
+        self.model_matrix.add_scale(0.5, 0.5, 0.5)
+        self.shader.set_model_matrix(self.model_matrix.matrix)
+        self.shader.set_material_diffuse(0.7, 0.7, 0.7)
         self.cube.draw(self.shader)
         self.model_matrix.pop_matrix()
 
@@ -156,48 +167,10 @@ class GraphicsProgram3D:
         self.model_matrix.load_identity()
 
         pygame.display.flip()
-
-    def draw_cube(self, tx=0, ty=0, tz=0, sx=1, sy=1, sz= 1, angle=0, axis='', color=[1,1,1]):
-        self.model_matrix.push_matrix()
-        self.model_matrix.add_translation(tx,ty,tz)
-        self.model_matrix.add_rotation(angle, axis)
-        self.model_matrix.add_scale(sx, sy,sz)
-        self.shader.set_model_matrix(self.model_matrix.matrix)
-        self.shader.set_solid_color(color[0], color[1], color[2])
-        self.cube.draw(self.shader)
-        self.model_matrix.pop_matrix()
-
-    def draw_pyramide(self, num_bricks_base, color):
-        ty = 0
-        tz = 0
-        tx = 0
-
-        for x in list(range(num_bricks_base, 0, -1)):
-            tx = tx - x - 0.5
-
-            for y in range(x):
-                self.draw_cube(color = color, tx = tx, ty = ty, tz = tz)
-                tx += 1
-            ty += 1
-
-    def draw_scene(self):
-        self.model_matrix.push_matrix()
-        self.model_matrix.add_translation(-1, -1, -1)
-        self.model_matrix.add_rotation(-10, 'y')
-        self.draw_cube(sx = 6, sz = 3, sy = 0.1, color = [0.5, 0.5, 0.5])
-        self.model_matrix.push_matrix()
-
-        self.model_matrix.add_rotation(90, 'y')
-        self.model_matrix.add_translation(z = -1.5, x = 1.5, y = 1.5)
-        self.draw_pyramide(3, [0.9, 0.9, 0.9])
-        self.model_matrix.pop_matrix()
-
-        self.draw_cube()
         
     def program_loop(self):
         exiting = False
         while not exiting:
-
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:
                     print("Quitting!")
