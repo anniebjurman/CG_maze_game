@@ -15,7 +15,7 @@ import random
 from Shaders import *
 from Matrices import *
 
-from Maze import Cell, Maze
+from Maze import Maze
 
 class GraphicsProgram3D:
     def __init__(self):
@@ -34,7 +34,6 @@ class GraphicsProgram3D:
 
         self.view_matrix = ViewMatrix()
         self.cube = Cube()
-
         self.clock = pygame.time.Clock()
         self.clock.tick()
 
@@ -42,10 +41,7 @@ class GraphicsProgram3D:
 
         self.light_pos = Point(0, 5, 5)
 
-        # scene
-        self.scene_base = [10, 10, 0.2]
-
-        ## --- CONTROLS FOR KEYS TO CONTROL THE CAMERA --- ##
+        # Camera controll
         self.UP_key_down = False
         self.UP_key_up = False
         self.UP_key_right = False
@@ -71,62 +67,62 @@ class GraphicsProgram3D:
         print(self.maze.to_string())
 
         # set camera relative to maze base
-        # self.view_matrix.eye = Point(self.maze.cell_width * self.maze.size / 2, 0.3, 1)
-        # self.shader.set_view_matrix(self.view_matrix.get_matrix())
-
-        # set camera to see the maze from above
-        self.view_matrix.eye = Point(self.maze.cell_width * self.maze.size / 2, 5, -1)
-        self.view_matrix.pitch(80)
+        self.view_matrix.eye = Point(self.maze.cell_width * self.maze.size / 2, 0.3, 1)
         self.shader.set_view_matrix(self.view_matrix.get_matrix())
 
+        # set camera to see the maze from above
+        # self.view_matrix.eye = Point(self.maze.cell_width * self.maze.size / 2, 5, -1)
+        # self.view_matrix.pitch(80)
+        # self.shader.set_view_matrix(self.view_matrix.get_matrix())
+
     def update(self):
-        delta_time = self.clock.tick() / 1000.0
+        delta_time = self.clock.tick() / 1000
 
         self.angle += pi * delta_time
         if self.angle > 2 * pi:
             self.angle -= (2 * pi)
 
-        speed = 0.01 # to controll the speed, better way of doing it?
-        tmp = self.angle * speed
-         
+        new_angle = self.angle * 0.07   #controll the speed, better way of doing it?
+
         # set view_matrix after checking all the ifs? but it's only nessecery to set when something has changed
 
         # WORKS
         if self.UP_key_up:
-            self.view_matrix.pitch(-tmp)
+            self.view_matrix.pitch(-new_angle)
             self.shader.set_view_matrix(self.view_matrix.get_matrix())
         if self.UP_key_down:
-            self.view_matrix.pitch(tmp)
+            self.view_matrix.pitch(new_angle)
             self.shader.set_view_matrix(self.view_matrix.get_matrix())
         if self.UP_key_right:
-            self.view_matrix.yaw(-tmp)
+            self.view_matrix.yaw(-new_angle)
             self.shader.set_view_matrix(self.view_matrix.get_matrix())
         if self.UP_key_left:
-            self.view_matrix.yaw(tmp)
+            self.view_matrix.yaw(new_angle)
             self.shader.set_view_matrix(self.view_matrix.get_matrix())
 
-        tmp2 = 0.001
+        walk_speed = 3 * delta_time
+
         if self.UP_key_w:
-            self.view_matrix.walk(0, 0, -tmp2)
+            self.view_matrix.walk(0, 0, -walk_speed)
             self.shader.set_view_matrix(self.view_matrix.get_matrix())
         if self.UP_key_s:
-            self.view_matrix.walk(0, 0, tmp2)
+            self.view_matrix.walk(0, 0, walk_speed)
             self.shader.set_view_matrix(self.view_matrix.get_matrix())
         # WORKS
         if self.UP_key_a:
-            self.view_matrix.walk(-tmp2, 0, 0)
+            self.view_matrix.walk(-walk_speed, 0, 0)
             self.shader.set_view_matrix(self.view_matrix.get_matrix())
         if self.UP_key_d:
-            self.view_matrix.walk(tmp2, 0, 0)
+            self.view_matrix.walk(walk_speed, 0, 0)
             self.shader.set_view_matrix(self.view_matrix.get_matrix())
         
         # Remove these if player is walking on a floor
-        if self.UP_key_r:
-            self.view_matrix.slide(0, tmp2, 0)
-            self.shader.set_view_matrix(self.view_matrix.get_matrix())
-        if self.UP_key_f:
-            self.view_matrix.slide(0, -tmp2, 0)
-            self.shader.set_view_matrix(self.view_matrix.get_matrix())
+        # if self.UP_key_r:
+        #     self.view_matrix.slide(0, walk_speed, 0)
+        #     self.shader.set_view_matrix(self.view_matrix.get_matrix())
+        # if self.UP_key_f:
+        #     self.view_matrix.slide(0, -walk_speed, 0)
+        #     self.shader.set_view_matrix(self.view_matrix.get_matrix())
         
         # move light
         if self.UP_key_k:
@@ -138,12 +134,13 @@ class GraphicsProgram3D:
     def display(self):
         glEnable(GL_DEPTH_TEST)  ### --- NEED THIS FOR NORMAL 3D BUT MANY EFFECTS BETTER WITH glDisable(GL_DEPTH_TEST) ... try it! --- ###
         glClearColor(0.1, 0.2, 0.2, 1.0)
-        glClear(GL_COLOR_BUFFER_BIT|GL_DEPTH_BUFFER_BIT)  ### --- YOU CAN ALSO CLEAR ONLY THE COLOR OR ONLY THE DEPTH --- ###
+        glClear(GL_COLOR_BUFFER_BIT|GL_DEPTH_BUFFER_BIT)
         self.shader.set_light_position(self.light_pos)
         self.shader.set_light_diffuse(1, 1, 1)
 
         self.draw_maze_base()
         self.draw_maze_walls()
+        # TODO: Draw walls around maze
 
         glViewport(0, 0, 800, 600)
         self.model_matrix.load_identity()
