@@ -157,10 +157,11 @@ class GraphicsProgram3D:
     
     def draw_maze_base(self):
         self.model_matrix.push_matrix()
-        trans_x_z = (self.maze.cell_width * self.maze.size / 2) - (self.maze.wall_thickness / 4)
+        trans_x_z = self.maze.cell_width * self.maze.size / 2
         self.model_matrix.add_translation(trans_x_z, -0.1 / 2, - trans_x_z)
-        scale_x_z = (self.maze.cell_width * self.maze.size) + (self.maze.wall_thickness / 2)
-        self.model_matrix.add_scale(scale_x_z, 0.1, scale_x_z)
+        scale_x = (self.maze.cell_width * self.maze.size) + self.maze.wall_thickness
+        scale_z = (self.maze.cell_width * self.maze.size) + self.maze.wall_thickness
+        self.model_matrix.add_scale(scale_x, 0.1, scale_z)
         self.shader.set_model_matrix(self.model_matrix.matrix)
         self.shader.set_material_diffuse(0.4, 0.9, 0.8)
         self.cube.draw(self.shader)
@@ -175,23 +176,44 @@ class GraphicsProgram3D:
             for cell in row:
                 if cell.wall_west:
                     self.model_matrix.push_matrix()
-                    self.model_matrix.add_translation(col_num * self.maze.cell_width, self.maze.wall_height / 2,
-                                                      - (tot_depth - (row_num * self.maze.cell_width) - self.maze.cell_width / 2))
-                    self.model_matrix.add_scale(self.maze.wall_thickness, self.maze.wall_height, self.maze.cell_width)
+
+                    trans_x = col_num * self.maze.cell_width
+                    trans_y = self.maze.wall_height / 2
+                    trans_z = - (tot_depth - (row_num + 1) * self.maze.cell_width + (self.maze.cell_width / 2))
+
+                    self.model_matrix.add_translation(trans_x, trans_y, trans_z)
+                    self.model_matrix.add_scale(self.maze.wall_thickness,
+                                                self.maze.wall_height, 
+                                                self.maze.cell_width + self.maze.wall_thickness)
+
                     self.shader.set_model_matrix(self.model_matrix.matrix)
                     self.shader.set_material_diffuse(0.4, 0.8, 0.9)
+
                     self.cube.draw(self.shader)
+
                     self.model_matrix.pop_matrix()
+
                 if cell.wall_south:
                     self.model_matrix.push_matrix()
-                    self.model_matrix.add_translation((col_num + 1) * self.maze.cell_width - self.maze.cell_width / 2, self.maze.wall_height / 2,
-                                                      - (tot_depth - (row_num + 1) * self.maze.cell_width))
-                    self.model_matrix.add_scale(self.maze.cell_width, self.maze.wall_height, self.maze.wall_thickness)
+
+                    trans_x = (col_num + 1) * self.maze.cell_width - self.maze.cell_width / 2
+                    trans_y = self.maze.wall_height / 2
+                    trans_z = - (tot_depth - (row_num + 1) * self.maze.cell_width)
+
+                    self.model_matrix.add_translation(trans_x, trans_y, trans_z)
+                    self.model_matrix.add_scale(self.maze.cell_width + self.maze.wall_thickness,
+                                                self.maze.wall_height,
+                                                self.maze.wall_thickness)
+
                     self.shader.set_model_matrix(self.model_matrix.matrix)
                     self.shader.set_material_diffuse(0.4, 0.8, 0.9)
+
                     self.cube.draw(self.shader)
+
                     self.model_matrix.pop_matrix()
+
                 col_num += 1
+                
             row_num += 1
             col_num = 0
 
