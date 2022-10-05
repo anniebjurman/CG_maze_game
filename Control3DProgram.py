@@ -15,6 +15,8 @@ import random
 from Shaders import *
 from Matrices import *
 
+from Maze import Cell, Maze
+
 class GraphicsProgram3D:
     def __init__(self):
 
@@ -65,6 +67,16 @@ class GraphicsProgram3D:
         #light
         self.UP_key_l = False
         self.UP_key_k = False
+
+        # init maze
+        self.maze = Maze(3)
+        self.maze.set_cell([0,0], 'west')
+        self.maze.set_cell([0,0], 'south')
+        self.maze.set_cell([1,1], 'south')
+        self.maze.set_cell([0,1], 'west')
+        self.maze.set_cell([0,2], 'south')
+        self.maze.set_cell([2,1], 'south')
+        print(self.maze.to_string())
 
     def update(self):
         delta_time = self.clock.tick() / 1000.0
