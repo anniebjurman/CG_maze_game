@@ -11,6 +11,7 @@ import Maze
 import Base3DObjects
 
 # TODO: Remove unused key-mappings
+#       Make cell_cord a class, and use it to represent cell cordinates
 
 class GraphicsProgram3D:
     def __init__(self):
@@ -74,8 +75,6 @@ class GraphicsProgram3D:
         # self.view_matrix.pitch(80)
         # self.shader.set_view_matrix(self.view_matrix.get_matrix())
 
-        self.colition_radius = 1
-
     def update(self):
         delta_time = self.clock.tick() / 1000
 
@@ -112,6 +111,36 @@ class GraphicsProgram3D:
             self.light_pos.x -= 0.2 * delta_time
         if self.UP_key_l:
             self.light_pos.x += 0.2 * delta_time
+
+        self.check_collision()
+
+
+    def check_collision(self):
+        collision_radius = 0.5
+        if self.check_if_in_maze():
+            maze_pos = self.get_current_cell()
+            cell = self.maze.maze[maze_pos[0]][maze_pos[1]]
+            if cell.wall_south:
+                print("south wall")
+            elif cell.wall_west:
+                print("west wall")
+            elif cell.wall_south and cell.wall_west:
+                print("both walls")
+            else:
+                print("----")
+
+    def check_if_in_maze(self):
+        cell_in_space = self.get_current_cell()
+        if 0 <= cell_in_space[0] < self.maze.size and \
+           0 <= cell_in_space[1] < self.maze.size:
+           return True
+        else:
+            return False
+
+    def get_current_cell(self): # TODO: because trunc round to 0, the negative values get rounded the wrong direction
+        x = math.trunc(self.view_matrix.eye.x) // self.maze.cell_width
+        z = math.trunc(self.view_matrix.eye.z) // self.maze.cell_width
+        return [z, x]
 
     def display(self):
         glEnable(GL_DEPTH_TEST)
