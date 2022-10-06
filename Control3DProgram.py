@@ -10,6 +10,8 @@ import Shaders
 import Maze
 import Base3DObjects
 
+# TODO: Remove unused key-mappings
+
 class GraphicsProgram3D:
     def __init__(self):
 
@@ -22,7 +24,7 @@ class GraphicsProgram3D:
         self.model_matrix = Matrices.ModelMatrix()
 
         self.projection_matrix = Matrices.ProjectionMatrix()
-        self.projection_matrix.set_perspective(60, 1920/1080, 0.2, 10)
+        self.projection_matrix.set_perspective(80, 1920/1080, 0.2, 10)
         self.shader.set_projection_matrix(self.projection_matrix.get_matrix())
 
         self.view_matrix = Matrices.ViewMatrix()
@@ -55,19 +57,24 @@ class GraphicsProgram3D:
         self.UP_key_k = False
 
         # init maze
-        self.maze = Maze.Maze(3)
-        self.maze.set_small_3_maze()
+        # self.maze = Maze.Maze(3)
+        # self.maze.set_small_3_maze()
         # self.maze.set_random_maze()
+        self.maze = Maze.Maze(2)
+        self.maze.maze[0][0].wall_south = True
+        self.maze.maze[1][0].wall_west = True
         print(self.maze.to_string())
 
         # set camera relative to maze base
-        self.view_matrix.eye = Base3DObjects.Point(self.maze.cell_width * self.maze.size / 2, 0.3, 2)
+        self.view_matrix.eye = Base3DObjects.Point(self.maze.cell_width * self.maze.size / 2, 0.5, self.maze.cell_width * self.maze.size + 1)
         self.shader.set_view_matrix(self.view_matrix.get_matrix())
 
         # set camera to see the maze from above
         # self.view_matrix.eye = Point(self.maze.cell_width * self.maze.size / 2, 5, -1)
         # self.view_matrix.pitch(80)
         # self.shader.set_view_matrix(self.view_matrix.get_matrix())
+
+        self.colition_radius = 1
 
     def update(self):
         delta_time = self.clock.tick() / 1000
@@ -76,17 +83,8 @@ class GraphicsProgram3D:
         if self.angle > 2 * math.pi:
             self.angle -= (2 * math.pi)
 
+        # look up/down/left/right
         new_angle = self.angle * 0.07   #controll the speed, better way of doing it?
-
-        # set view_matrix after checking all the ifs? but it's only nessecery to set when something has changed
-
-        # WORKS
-        if self.UP_key_up:
-            self.view_matrix.pitch(-new_angle)
-            self.shader.set_view_matrix(self.view_matrix.get_matrix())
-        if self.UP_key_down:
-            self.view_matrix.pitch(new_angle)
-            self.shader.set_view_matrix(self.view_matrix.get_matrix())
         if self.UP_key_right:
             self.view_matrix.yaw(-new_angle)
             self.shader.set_view_matrix(self.view_matrix.get_matrix())
@@ -94,15 +92,14 @@ class GraphicsProgram3D:
             self.view_matrix.yaw(new_angle)
             self.shader.set_view_matrix(self.view_matrix.get_matrix())
 
+        # Walk forward/backwards/lef/right
         walk_speed = 3 * delta_time
-
         if self.UP_key_w:
             self.view_matrix.walk(0, 0, -walk_speed)
             self.shader.set_view_matrix(self.view_matrix.get_matrix())
         if self.UP_key_s:
             self.view_matrix.walk(0, 0, walk_speed)
             self.shader.set_view_matrix(self.view_matrix.get_matrix())
-        # WORKS
         if self.UP_key_a:
             self.view_matrix.walk(-walk_speed, 0, 0)
             self.shader.set_view_matrix(self.view_matrix.get_matrix())
@@ -110,20 +107,11 @@ class GraphicsProgram3D:
             self.view_matrix.walk(walk_speed, 0, 0)
             self.shader.set_view_matrix(self.view_matrix.get_matrix())
 
-        # Remove these if player is walking on a floor
-        # if self.UP_key_r:
-        #     self.view_matrix.slide(0, walk_speed, 0)
-        #     self.shader.set_view_matrix(self.view_matrix.get_matrix())
-        # if self.UP_key_f:
-        #     self.view_matrix.slide(0, -walk_speed, 0)
-        #     self.shader.set_view_matrix(self.view_matrix.get_matrix())
-
         # move light
         if self.UP_key_k:
             self.light_pos.x -= 0.2 * delta_time
         if self.UP_key_l:
             self.light_pos.x += 0.2 * delta_time
-
 
     def display(self):
         glEnable(GL_DEPTH_TEST)
@@ -143,22 +131,24 @@ class GraphicsProgram3D:
 
     def draw_maze_base(self):
         base_color = [0.4, 0.4, 0.4]
+        base_thickness = 0.1
 
         self.model_matrix.push_matrix()
+
         trans_x_z = self.maze.cell_width * self.maze.size / 2
-        self.model_matrix.add_translation(trans_x_z, -0.1 / 2, - trans_x_z)
+        self.model_matrix.add_translation(trans_x_z, -base_thickness / 2, trans_x_z)
+
         scale_x = (self.maze.cell_width * self.maze.size) + self.maze.wall_thickness
         scale_z = (self.maze.cell_width * self.maze.size) + self.maze.wall_thickness
-        self.model_matrix.add_scale(scale_x, 0.1, scale_z)
+        self.model_matrix.add_scale(scale_x, base_thickness, scale_z)
+
         self.shader.set_model_matrix(self.model_matrix.matrix)
         self.shader.set_material_diffuse(base_color[0], base_color[1], base_color[2])
         self.cube.draw(self.shader)
+
         self.model_matrix.pop_matrix()
 
     def draw_maze_walls(self):
-        row_num = 0
-        col_num = 0
-        tot_depth = self.maze.size * self.maze.cell_width
         wall_color = [0.7, 0.4, 0.1]
 
         for row in self.maze.maze:
@@ -166,9 +156,9 @@ class GraphicsProgram3D:
                 if cell.wall_west:
                     self.model_matrix.push_matrix()
 
-                    trans_x = col_num * self.maze.cell_width
+                    trans_x = cell.cordinates[1] * self.maze.cell_width
                     trans_y = self.maze.wall_height / 2
-                    trans_z = - (tot_depth - (row_num + 1) * self.maze.cell_width + (self.maze.cell_width / 2))
+                    trans_z = cell.cordinates[0] * self.maze.cell_width + self.maze.cell_width / 2
 
                     self.model_matrix.add_translation(trans_x, trans_y, trans_z)
                     self.model_matrix.add_scale(self.maze.wall_thickness,
@@ -185,9 +175,9 @@ class GraphicsProgram3D:
                 if cell.wall_south:
                     self.model_matrix.push_matrix()
 
-                    trans_x = (col_num + 1) * self.maze.cell_width - self.maze.cell_width / 2
+                    trans_x = cell.cordinates[1] * self.maze.cell_width + self.maze.cell_width / 2
                     trans_y = self.maze.wall_height / 2
-                    trans_z = - (tot_depth - (row_num + 1) * self.maze.cell_width)
+                    trans_z = (cell.cordinates[0] + 1) * self.maze.size
 
                     self.model_matrix.add_translation(trans_x, trans_y, trans_z)
                     self.model_matrix.add_scale(self.maze.cell_width + self.maze.wall_thickness,
@@ -200,11 +190,6 @@ class GraphicsProgram3D:
                     self.cube.draw(self.shader)
 
                     self.model_matrix.pop_matrix()
-
-                col_num += 1
-
-            row_num += 1
-            col_num = 0
 
 
     def program_loop(self):
