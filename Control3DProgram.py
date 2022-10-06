@@ -1,16 +1,7 @@
-
-# from OpenGL.GL import *
-# from OpenGL.GLU import *
-from array import ArrayType
 from math import *
-from pyclbr import Function
 
 import pygame
 from pygame.locals import *
-
-import sys
-import time
-import random
 
 from Shaders import *
 from Matrices import *
@@ -20,7 +11,7 @@ from Maze import Maze
 class GraphicsProgram3D:
     def __init__(self):
 
-        pygame.init() 
+        pygame.init()
         pygame.display.set_mode((800,600), pygame.OPENGL|pygame.DOUBLEBUF)
 
         self.shader = Shader3D()
@@ -115,7 +106,7 @@ class GraphicsProgram3D:
         if self.UP_key_d:
             self.view_matrix.walk(walk_speed, 0, 0)
             self.shader.set_view_matrix(self.view_matrix.get_matrix())
-        
+
         # Remove these if player is walking on a floor
         # if self.UP_key_r:
         #     self.view_matrix.slide(0, walk_speed, 0)
@@ -123,7 +114,7 @@ class GraphicsProgram3D:
         # if self.UP_key_f:
         #     self.view_matrix.slide(0, -walk_speed, 0)
         #     self.shader.set_view_matrix(self.view_matrix.get_matrix())
-        
+
         # move light
         if self.UP_key_k:
             self.light_pos.x -= 0.2 * delta_time
@@ -136,7 +127,7 @@ class GraphicsProgram3D:
         glClearColor(0.1, 0.2, 0.2, 1.0)
         glClear(GL_COLOR_BUFFER_BIT|GL_DEPTH_BUFFER_BIT)
         self.shader.set_light_position(self.light_pos)
-        self.shader.set_light_diffuse(1, 1, 1)
+        self.shader.set_light_color(1, 1, 1)
 
         self.draw_maze_base()
         self.draw_maze_walls()
@@ -146,8 +137,10 @@ class GraphicsProgram3D:
         self.model_matrix.load_identity()
 
         pygame.display.flip()
-    
+
     def draw_maze_base(self):
+        base_color = [0.4, 0.4, 0.4]
+
         self.model_matrix.push_matrix()
         trans_x_z = self.maze.cell_width * self.maze.size / 2
         self.model_matrix.add_translation(trans_x_z, -0.1 / 2, - trans_x_z)
@@ -155,14 +148,15 @@ class GraphicsProgram3D:
         scale_z = (self.maze.cell_width * self.maze.size) + self.maze.wall_thickness
         self.model_matrix.add_scale(scale_x, 0.1, scale_z)
         self.shader.set_model_matrix(self.model_matrix.matrix)
-        self.shader.set_material_diffuse(0.4, 0.9, 0.8)
+        self.shader.set_material_diffuse(base_color[0], base_color[1], base_color[2])
         self.cube.draw(self.shader)
         self.model_matrix.pop_matrix()
-    
+
     def draw_maze_walls(self):
         row_num = 0
         col_num = 0
         tot_depth = self.maze.size * self.maze.cell_width
+        wall_color = [0.7, 0.4, 0.1]
 
         for row in self.maze.maze:
             for cell in row:
@@ -175,11 +169,11 @@ class GraphicsProgram3D:
 
                     self.model_matrix.add_translation(trans_x, trans_y, trans_z)
                     self.model_matrix.add_scale(self.maze.wall_thickness,
-                                                self.maze.wall_height, 
+                                                self.maze.wall_height,
                                                 self.maze.cell_width + self.maze.wall_thickness)
 
                     self.shader.set_model_matrix(self.model_matrix.matrix)
-                    self.shader.set_material_diffuse(0.4, 0.8, 0.9)
+                    self.shader.set_material_diffuse(wall_color[0], wall_color[1], wall_color[2])
 
                     self.cube.draw(self.shader)
 
@@ -198,7 +192,7 @@ class GraphicsProgram3D:
                                                 self.maze.wall_thickness)
 
                     self.shader.set_model_matrix(self.model_matrix.matrix)
-                    self.shader.set_material_diffuse(0.4, 0.8, 0.9)
+                    self.shader.set_material_diffuse(wall_color[0], wall_color[1], wall_color[2])
 
                     self.cube.draw(self.shader)
 
@@ -209,7 +203,7 @@ class GraphicsProgram3D:
             row_num += 1
             col_num = 0
 
-        
+
     def program_loop(self):
         exiting = False
         while not exiting:
@@ -221,7 +215,7 @@ class GraphicsProgram3D:
                 elif event.type == pygame.KEYDOWN:
                     if event.key == K_ESCAPE:
                         print("Escaping!")
-                        exiting = True   
+                        exiting = True
                     elif event.key == K_UP:
                         self.UP_key_up = True
                     elif event.key == K_DOWN:
@@ -248,7 +242,7 @@ class GraphicsProgram3D:
                         self.UP_key_q = True
                     elif event.key == K_e:
                         self.UP_key_e = True
-                    
+
                     elif event.key == K_l:
                         self.UP_key_l = True
                     elif event.key == K_k:
@@ -263,7 +257,7 @@ class GraphicsProgram3D:
                         self.UP_key_right = False
                     elif event.key == K_LEFT:
                         self.UP_key_left = False
-                    
+
                     elif event.key == K_w:
                         self.UP_key_w = False
                     elif event.key == K_s:
@@ -281,12 +275,12 @@ class GraphicsProgram3D:
                         self.UP_key_q = False
                     elif event.key == K_e:
                         self.UP_key_e = False
-                    
+
                     elif event.key == K_l:
                         self.UP_key_l = False
                     elif event.key == K_k:
                         self.UP_key_k = False
-            
+
             self.update()
             self.display()
 

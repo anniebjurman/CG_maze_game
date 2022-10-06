@@ -36,25 +36,32 @@ class Shader3D:
         glEnableVertexAttribArray(self.positionLoc)
         ## ADD CODE HERE ##
         self.normalLoc = glGetAttribLocation(self.renderingProgramID, "a_normal")
-        glEnableVertexAttribArray(self.normalLoc) 
+        glEnableVertexAttribArray(self.normalLoc)
 
-        self.lightPosLoc = glGetUniformLocation(self.renderingProgramID, "u_light_position")
-        self.lightDifLoc = glGetUniformLocation(self.renderingProgramID, "u_light_diffuse")
-        self.matDifLoc = glGetUniformLocation(self.renderingProgramID, "u_material_diffuse")
-
+        # Matrices
         self.modelMatrixLoc = glGetUniformLocation(self.renderingProgramID, "u_model_matrix")
-        
         self.projectionMatrixLoc = glGetUniformLocation(self.renderingProgramID, "u_projection_matrix")
         self.viewMatrixLoc = glGetUniformLocation(self.renderingProgramID, "u_view_matrix")
+
+        # Lights
+        self.lightPosLoc = glGetUniformLocation(self.renderingProgramID, "u_light_position")
+        self.lightColLoc = glGetUniformLocation(self.renderingProgramID, "u_light_color")
+        self.matDifLoc = glGetUniformLocation(self.renderingProgramID, "u_material_diffuse")
+        self.matSpecLoc = glGetUniformLocation(self.renderingProgramID, "u_material_specular")
+        self.matShineLoc = glGetUniformLocation(self.renderingProgramID, "u_material_shininess")
+
+        self.eyePosLoc = glGetUniformLocation(self.renderingProgramID, "u_eye_position")
+        self.globalAmbLoc = glGetUniformLocation(self.renderingProgramID, "u_global_ambient")
 
 
     def use(self):
         try:
-            glUseProgram(self.renderingProgramID)   
+            glUseProgram(self.renderingProgramID)
         except OpenGL.error.GLError:
             print(glGetProgramInfoLog(self.renderingProgramID))
             raise
 
+    # Matrices
     def set_model_matrix(self, matrix_array):
         glUniformMatrix4fv(self.modelMatrixLoc, 1, True, matrix_array)
 
@@ -64,18 +71,33 @@ class Shader3D:
     def set_view_matrix(self, matrix_array):
         glUniformMatrix4fv(self.viewMatrixLoc, 1, True, matrix_array)
 
+    # Position and normal
     def set_position_attribute(self, vertex_array):
         glVertexAttribPointer(self.positionLoc, 3, GL_FLOAT, False, 0, vertex_array)
 
     def set_normal_attribute(self, vertex_array):
         glVertexAttribPointer(self.normalLoc, 3, GL_FLOAT, False, 0, vertex_array)
-    
+
+    # Lights
     def set_light_position(self, pos):
         glUniform4f(self.lightPosLoc, pos.x, pos.y, pos.z, 1.0)
 
-    def set_light_diffuse(self, r, g, b):
-        glUniform4f(self.lightDifLoc, r, g, b, 1.0)
+    def set_light_color(self, r, g, b):
+        glUniform4f(self.lightColLoc, r, g, b, 1.0)
 
     def set_material_diffuse(self, r, g, b):
         glUniform4f(self.matDifLoc, r, g, b, 1.0)
+
+    def set_material_specular(self, r, g, b):
+        glUniform4f(self.matSpecLoc, r, g, b, 1.0)
+
+    def set_material_shine(self, s):
+        glUniform1f(self.matShineLoc, s)
+
+
+    def set_eye_location(self, pos):
+        glUniform4f(self.eyePosLoc, pos.x, pos.y, pos.z, 1.0)
+
+    def set_global_ambient_location(self, r, g, b):
+        glUniform4f(self.globalAmbLoc, r, g, b, 1.0)
 
