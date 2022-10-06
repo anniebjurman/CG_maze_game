@@ -1,10 +1,5 @@
 
-from curses.panel import top_panel
-from math import *
-# from turtle import right
-# from turtle import up
-# from xml.etree.ElementTree import PI # trigonometry
-
+import math
 from Base3DObjects import *
 
 class ModelMatrix:
@@ -118,12 +113,12 @@ class ViewMatrix:
         self.n = Vector(eye[0] - center[0], eye[1] - center[1], eye[2] - center[2])
         self.u = up.cross(self.n)
         self.v = self.n.cross(self.u)
-    
+
     def slide(self, del_u, del_v, del_n):
         self.eye.x += del_u * self.u.x + del_v * self.v.x + del_n * self.n.x
         self.eye.y += del_u * self.u.y + del_v * self.v.y + del_n* self.n.y
         self.eye.z += del_u * self.u.z + del_v * self.v.z + del_n * self.n.z
-    
+
     # not change the or use the y-coordinates of the camera’s coordinate frame.
     def walk(self, del_u, del_v, del_n):
         self.eye.x += del_u * self.u.x + del_v * self.v.x + del_n * self.n.x
@@ -131,8 +126,8 @@ class ViewMatrix:
 
     # rotate camera about the n-axis
     def roll(self, angle):
-        ang_cos = cos(angle * math.pi/180.0)
-        ang_sin = sin(angle * math.pi/180.0)
+        ang_cos = math.cos(angle * math.pi/180.0)
+        ang_sin = math.sin(angle * math.pi/180.0)
         u_org = self.u # store original u
 
         self.u = Vector(ang_cos * u_org.x + ang_sin * self.v.x,
@@ -145,10 +140,10 @@ class ViewMatrix:
 
     # rotate camera about the u-axis
     def pitch(self, angle):
-        ang_cos = cos(angle * math.pi/180.0)
-        ang_sin = sin(angle * math.pi/180.0)
+        ang_cos = math.cos(angle * math.pi/180.0)
+        ang_sin = math.sin(angle * math.pi/180.0)
         n_org = self.n # store original n
-        
+
         self.n = Vector(ang_cos * n_org.x + ang_sin * self.v.x,
                         ang_cos * n_org.y + ang_sin * self.v.y,
                         ang_cos * n_org.z + ang_sin * self.v.z)
@@ -159,10 +154,10 @@ class ViewMatrix:
 
     # rotate camera about the v-axis
     def yaw(self, angle):
-        ang_cos = cos(angle * math.pi/180.0)
-        ang_sin = sin(angle * math.pi/180.0)
+        ang_cos = math.cos(angle * math.pi/180.0)
+        ang_sin = math.sin(angle * math.pi/180.0)
         n_org = self.n # store original n
-        
+
         self.n = Vector(ang_cos * n_org.x + ang_sin * self.u.x,
                         ang_cos * n_org.y + ang_sin * self.u.y,
                         ang_cos * n_org.z + ang_sin * self.u.z)
@@ -176,7 +171,7 @@ class ViewMatrix:
     #     ang_cos = cos(angle * math.pi/180.0)
     #     ang_sin = sin(angle * math.pi/180.0)
     #     n_org = self.n # store original n
-        
+
     #     self.n = Vector(ang_cos * n_org.x + ang_sin * self.u.x,
     #                     ang_cos * n_org.y + ang_sin * self.u.y,
     #                     ang_cos * n_org.z + ang_sin * self.u.z)
@@ -191,14 +186,14 @@ class ViewMatrix:
                 self.v.x, self.v.y, self.v.z, minusEye.dot(self.v),
                 self.n.x, self.n.y, self.n.z, minusEye.dot(self.n),
                 0,        0,        0,        1]
-    
+
     def to_string(self):
         matrix = self.get_matrix()
         string = "[ " + str(matrix[0]) + ", " + str(matrix[1]) + ", " + str(matrix[2]) + ", " + str(matrix[3]) + ",\n" \
                       + str(matrix[4]) + ", " + str(matrix[5]) + ", " + str(matrix[6]) + ", " + str(matrix[7]) + ",\n" \
                       + str(matrix[8]) + ", " + str(matrix[9]) + ", " + str(matrix[10]) + ", " + str(matrix[11]) + " ]"
         return string
-    
+
     def values_to_string(self):
         return "View matrix:\n" + "\teye: " + self.eye.to_string() + "\n\tu: " + \
                 self.u.to_string() + "\n\tn: " + self.n.to_string() + "\n\tv: " + \
@@ -218,9 +213,6 @@ class ProjectionMatrix:
         self.far = 1
 
         self.is_orthographic = True
-
-    ## MAKE OPERATION TO SET PERSPECTIVE PROJECTION (don't forget to set is_orthographic to False) ##
-    # ---
 
     def set_orthographic(self, left, right, bottom, top, near, far):
         self.is_orthographic = True
@@ -268,68 +260,3 @@ class ProjectionMatrix:
         self.left = -self.right
         self.near = near
         self.far = far
-
-
-
-# The ProjectionViewMatrix returns a hardcoded matrix
-# that is just used to get something to send to the
-# shader before you properly implement the ViewMatrix
-# and ProjectionMatrix classes.
-# Feel free to throw it away afterwards!
-
-class ProjectionViewMatrix:
-    def __init__(self):
-        pass
-
-    def get_matrix(self):
-        return [ 0.45052942369783683,  0.0,  -0.15017647456594563,  0.0,
-                -0.10435451285616304,  0.5217725642808152,  -0.3130635385684891,  0.0,
-                -0.2953940042189954,  -0.5907880084379908,  -0.8861820126569863,  3.082884480118567,
-                -0.2672612419124244,  -0.5345224838248488,  -0.8017837257372732,  3.7416573867739413 ]
-
-
-# IDEAS FOR OPERATIONS AND TESTING:
-# if __name__ == "__main__":
-#     matrix = ModelMatrix()
-#     matrix.push_matrix()
-#     print(matrix)
-#     matrix.add_translation(3, 1, 2)
-#     matrix.push_matrix()
-#     print(matrix)
-#     matrix.add_scale(2, 3, 4)
-#     print(matrix)
-#     matrix.pop_matrix()
-#     print(matrix)
-    
-#     matrix.add_translation(5, 5, 5)
-#     matrix.push_matrix()
-#     print(matrix)
-#     matrix.add_scale(3, 2, 3)
-#     print(matrix)
-#     matrix.pop_matrix()
-#     print(matrix)
-    
-#     matrix.pop_matrix()
-#     print(matrix)
-        
-#     matrix.push_matrix()
-#     matrix.add_scale(2, 2, 2)
-#     print(matrix)
-#     matrix.push_matrix()
-#     matrix.add_translation(3, 3, 3)
-#     print(matrix)
-#     matrix.push_matrix()
-#     matrix.add_rotation_y(pi / 3)
-#     print(matrix)
-#     matrix.push_matrix()
-#     matrix.add_translation(1, 1, 1)
-#     print(matrix)
-#     matrix.pop_matrix()
-#     print(matrix)
-#     matrix.pop_matrix()
-#     print(matrix)
-#     matrix.pop_matrix()
-#     print(matrix)
-#     matrix.pop_matrix()
-#     print(matrix)
-    

@@ -1,12 +1,14 @@
-from math import *
+import math
+from OpenGL.GL import *
+from OpenGL.GLU import *
 
 import pygame
 from pygame.locals import *
 
-from Shaders import *
-from Matrices import *
-
-from Maze import Maze
+import Matrices
+import Shaders
+import Maze
+import Base3DObjects
 
 class GraphicsProgram3D:
     def __init__(self):
@@ -14,23 +16,23 @@ class GraphicsProgram3D:
         pygame.init()
         pygame.display.set_mode((800,600), pygame.OPENGL|pygame.DOUBLEBUF)
 
-        self.shader = Shader3D()
+        self.shader = Shaders.Shader3D()
         self.shader.use()
 
-        self.model_matrix = ModelMatrix()
+        self.model_matrix = Matrices.ModelMatrix()
 
-        self.projection_matrix = ProjectionMatrix()
+        self.projection_matrix = Matrices.ProjectionMatrix()
         self.projection_matrix.set_perspective(60, 1920/1080, 0.2, 10)
         self.shader.set_projection_matrix(self.projection_matrix.get_matrix())
 
-        self.view_matrix = ViewMatrix()
-        self.cube = Cube()
+        self.view_matrix = Matrices.ViewMatrix()
+        self.cube = Base3DObjects.Cube()
         self.clock = pygame.time.Clock()
         self.clock.tick()
 
         self.angle = 0
 
-        self.light_pos = Point(0, 5, 5)
+        self.light_pos = Base3DObjects.Point(0, 5, 5)
 
         # Camera controll
         self.UP_key_down = False
@@ -53,12 +55,12 @@ class GraphicsProgram3D:
         self.UP_key_k = False
 
         # init maze
-        self.maze = Maze(3)
+        self.maze = Maze.Maze(3)
         self.maze.set_small_3_maze()
         print(self.maze.to_string())
 
         # set camera relative to maze base
-        self.view_matrix.eye = Point(self.maze.cell_width * self.maze.size / 2, 0.3, 1)
+        self.view_matrix.eye = Base3DObjects.Point(self.maze.cell_width * self.maze.size / 2, 0.3, 1)
         self.shader.set_view_matrix(self.view_matrix.get_matrix())
 
         # set camera to see the maze from above
@@ -69,9 +71,9 @@ class GraphicsProgram3D:
     def update(self):
         delta_time = self.clock.tick() / 1000
 
-        self.angle += pi * delta_time
-        if self.angle > 2 * pi:
-            self.angle -= (2 * pi)
+        self.angle += math.pi * delta_time
+        if self.angle > 2 * math.pi:
+            self.angle -= (2 * math.pi)
 
         new_angle = self.angle * 0.07   #controll the speed, better way of doing it?
 
@@ -123,7 +125,7 @@ class GraphicsProgram3D:
 
 
     def display(self):
-        glEnable(GL_DEPTH_TEST)  ### --- NEED THIS FOR NORMAL 3D BUT MANY EFFECTS BETTER WITH glDisable(GL_DEPTH_TEST) ... try it! --- ###
+        glEnable(GL_DEPTH_TEST)
         glClearColor(0.1, 0.2, 0.2, 1.0)
         glClear(GL_COLOR_BUFFER_BIT|GL_DEPTH_BUFFER_BIT)
         self.shader.set_light_position(self.light_pos)

@@ -1,6 +1,5 @@
 attribute vec3 a_position;
 attribute vec3 a_normal;
-//## ADD CODE HERE ##
 
 uniform vec4 u_eye_position;
 uniform vec4 u_global_ambient;
@@ -17,7 +16,7 @@ uniform vec4 u_material_diffuse;	//used for both Diffuse and Ambient
 uniform vec4 u_material_specular;
 uniform float u_material_shininess;
 
-varying vec4 v_color;  //Leave the varying variables alone to begin with
+varying vec4 v_color;
 
 void main(void)
 {
