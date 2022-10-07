@@ -2,6 +2,7 @@ from enum import Enum
 
 
 import enum
+import random
 
 class Wall(Enum):
     SOUTH = 1
@@ -65,9 +66,9 @@ class Maze:
         self.set_cell(self.maze[2][2], Wall.WEST)
 
     def set_random_maze(self):
-        start_point = [0,0]
-        end_point = [self.size - 1, self.size - 1]
-        curr_point = start_point
+        start_cell = CellCord(self.size - 1, self.size - 1)
+        end_cell = CellCord(0, 0)
+        curr_cell = start_cell
         run_alg = True
         visited_cells = []
 
@@ -76,12 +77,16 @@ class Maze:
                 self.set_cell(cell, Wall.SOUTH)
                 self.set_cell(cell, Wall.WEST)
 
-        visit_cell = self.maze[curr_point[0], curr_point[1]]
+        visit_cell = self.maze[curr_cell.row][curr_cell.col]
         visit_cell.visited = True
-        visited_cells.append[visit_cell]
+        visited_cells.append(visit_cell)
 
         while run_alg:
             # TODO: choose random location relative to current location, ...
+            dir = random.randint(1,4)
+            print(dir)
+            if dir == 3:
+                run_alg = False
             pass
 
 

@@ -49,7 +49,7 @@ class GraphicsProgram3D:
 
         # init maze
         self.maze = Maze.Maze(3)
-        self.maze.set_small_3_maze()
+        self.maze.set_random_maze()
 
         # set camera relative to maze base
         # self.view_matrix.eye = Base3DObjects.Point(self.maze.cell_width * self.maze.size / 2, 0.5, self.maze.cell_width * self.maze.size + 1)
