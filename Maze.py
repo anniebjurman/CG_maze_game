@@ -47,9 +47,9 @@ class Maze:
 
     def set_cell(self, cell, wall):
         if wall == Wall.SOUTH:
-            self.maze[cell.cordinates[0]][cell.cordinates[1]].wall_south = True
+            self.maze[cell.cord.row][cell.cord.col].wall_south = True
         elif wall == Wall.WEST:
-            self.maze[cell.cordinates[0]][cell.cordinates[1]].wall_west = True
+            self.maze[cell.cord.row][cell.cord.col].wall_west = True
 
     def reset_maze(self):
         for row in self.maze:
@@ -59,8 +59,10 @@ class Maze:
     def set_small_3_maze(self):
         self.set_cell(self.maze[0][0], Wall.SOUTH)
         self.set_cell(self.maze[0][1], Wall.SOUTH)
+        self.set_cell(self.maze[1][0], Wall.SOUTH)
         self.set_cell(self.maze[1][2], Wall.WEST)
         self.set_cell(self.maze[2][1], Wall.WEST)
+        self.set_cell(self.maze[2][2], Wall.WEST)
 
     def set_random_maze(self):
         start_point = [0,0]
@@ -100,3 +102,18 @@ class Maze:
             res += "|\n"
         res += "__" * len(self.maze) + "__"
         return res
+
+    def print_values(self):
+        for row in self.maze:
+            print('\nRow')
+            for cell in row:
+                print("[" + str(cell.cord.row) + "][" + str(cell.cord.col) + "]")
+                if cell.wall_south and cell.wall_west:
+                    print("Both walls")
+                elif cell.wall_south:
+                    print("Wall south")
+                elif cell.wall_west:
+                    print("Wall West")
+                else:
+                    print("----")
+

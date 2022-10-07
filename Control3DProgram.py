@@ -22,7 +22,7 @@ class GraphicsProgram3D:
         self.model_matrix = Matrices.ModelMatrix()
 
         self.projection_matrix = Matrices.ProjectionMatrix()
-        self.projection_matrix.set_perspective(80, 1920/1080, 0.2, 10)
+        self.projection_matrix.set_perspective(60, 1920/1080, 0.2, 10)
         self.shader.set_projection_matrix(self.projection_matrix.get_matrix())
 
         self.view_matrix = Matrices.ViewMatrix()
@@ -48,22 +48,17 @@ class GraphicsProgram3D:
         self.UP_key_k = False
 
         # init maze
-        # self.maze = Maze.Maze(3)
-        # self.maze.set_small_3_maze()
-        # self.maze.set_random_maze()
         self.maze = Maze.Maze(3)
-        self.maze.maze[1][1].wall_west = True
-        self.maze.maze[1][1].wall_south = True
-        print(self.maze.to_string())
+        self.maze.set_small_3_maze()
 
         # set camera relative to maze base
-        self.view_matrix.eye = Base3DObjects.Point(self.maze.cell_width * self.maze.size / 2, 0.5, self.maze.cell_width * self.maze.size + 1)
-        self.shader.set_view_matrix(self.view_matrix.get_matrix())
+        # self.view_matrix.eye = Base3DObjects.Point(self.maze.cell_width * self.maze.size / 2, 0.5, self.maze.cell_width * self.maze.size + 1)
+        # self.shader.set_view_matrix(self.view_matrix.get_matrix())
 
         # set camera to see the maze from above
-        # self.view_matrix.eye = Base3DObjects.Point(self.maze.cell_width * self.maze.size / 2, 5, 5)
-        # self.view_matrix.pitch(80)
-        # self.shader.set_view_matrix(self.view_matrix.get_matrix())
+        self.view_matrix.eye = Base3DObjects.Point(self.maze.cell_width * self.maze.size / 2, 7, 5)
+        self.view_matrix.pitch(80)
+        self.shader.set_view_matrix(self.view_matrix.get_matrix())
 
     def update(self):
         delta_time = self.clock.tick() / 1000
@@ -114,7 +109,7 @@ class GraphicsProgram3D:
             return False
 
     def check_collision(self):
-        collision_radius = 1
+        collision_radius = 0.5
         curr_cell_cord = self.get_current_cell_cord()
         curr_cell = self.maze.maze[curr_cell_cord[0]][curr_cell_cord[1]]
 
@@ -122,7 +117,10 @@ class GraphicsProgram3D:
         if curr_cell.cord.col + 1 < self.maze.size:
             right_cell = self.maze.maze[curr_cell.cord.row][curr_cell.cord.col + 1]
             if right_cell.wall_west:
-                pass # check collition
+                wall_x_value = right_cell.cord.col * self.maze.cell_width - self.maze.wall_thickness / 2
+                if self.view_matrix.eye.x + collision_radius > wall_x_value:
+                    self.view_matrix.eye.x = wall_x_value - collision_radius
+                    self.shader.set_view_matrix(self.view_matrix.get_matrix())
 
         # wall to the left (own wall)
         if curr_cell.wall_west:
@@ -135,7 +133,10 @@ class GraphicsProgram3D:
         if curr_cell.cord.row - 1 >= 0:
             cell_above = self.maze.maze[curr_cell.cord.row - 1][curr_cell.cord.col]
             if cell_above.wall_south:
-                pass # check collision
+                wall_z_value = curr_cell.cord.row * self.maze.cell_width + self.maze.wall_thickness / 2
+                if self.view_matrix.eye.z - collision_radius < wall_z_value:
+                    self.view_matrix.eye.z = wall_z_value + collision_radius
+                    self.shader.set_view_matrix(self.view_matrix.get_matrix())
 
         # wall below (own wall)
         if curr_cell.wall_south:
