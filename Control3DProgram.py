@@ -38,8 +38,6 @@ class GraphicsProgram3D:
         self.light_pos = Base3DObjects.Point(0, 5, 5)
 
         # Camera controll
-        self.UP_key_down = False
-        self.UP_key_up = False
         self.UP_key_right = False
         self.UP_key_left = False
 
@@ -47,11 +45,6 @@ class GraphicsProgram3D:
         self.UP_key_s = False
         self.UP_key_a = False
         self.UP_key_d = False
-
-        self.UP_key_q = False
-        self.UP_key_e = False
-        self.UP_key_r = False
-        self.UP_key_f = False
 
         #light
         self.UP_key_l = False
@@ -233,10 +226,6 @@ class GraphicsProgram3D:
                     if event.key == K_ESCAPE:
                         print("Escaping!")
                         exiting = True
-                    elif event.key == K_UP:
-                        self.UP_key_up = True
-                    elif event.key == K_DOWN:
-                        self.UP_key_down = True
                     elif event.key == K_RIGHT:
                         self.UP_key_right = True
                     elif event.key == K_LEFT:
@@ -251,26 +240,13 @@ class GraphicsProgram3D:
                     elif event.key == K_d:
                         self.UP_key_d = True
 
-                    elif event.key == K_r:
-                        self.UP_key_r = True
-                    elif event.key == K_f:
-                        self.UP_key_f = True
-                    elif event.key == K_q:
-                        self.UP_key_q = True
-                    elif event.key == K_e:
-                        self.UP_key_e = True
-
                     elif event.key == K_l:
                         self.UP_key_l = True
                     elif event.key == K_k:
                         self.UP_key_k = True
 
                 elif event.type == pygame.KEYUP:
-                    if event.key == K_UP:
-                        self.UP_key_up = False
-                    elif event.key == K_DOWN:
-                        self.UP_key_down = False
-                    elif event.key == K_RIGHT:
+                    if event.key == K_RIGHT:
                         self.UP_key_right = False
                     elif event.key == K_LEFT:
                         self.UP_key_left = False
@@ -283,15 +259,6 @@ class GraphicsProgram3D:
                         self.UP_key_a = False
                     elif event.key == K_d:
                         self.UP_key_d = False
-
-                    elif event.key == K_r:
-                        self.UP_key_r = False
-                    elif event.key == K_f:
-                        self.UP_key_f = False
-                    elif event.key == K_q:
-                        self.UP_key_q = False
-                    elif event.key == K_e:
-                        self.UP_key_e = False
 
                     elif event.key == K_l:
                         self.UP_key_l = False
