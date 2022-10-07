@@ -22,7 +22,7 @@ class GraphicsProgram3D:
         self.model_matrix = Matrices.ModelMatrix()
 
         self.projection_matrix = Matrices.ProjectionMatrix()
-        self.projection_matrix.set_perspective(60, 1920/1080, 0.2, 10)
+        self.projection_matrix.set_perspective(60, 1920/1080, 0.2, 40)
         self.shader.set_projection_matrix(self.projection_matrix.get_matrix())
 
         self.view_matrix = Matrices.ViewMatrix()
@@ -48,15 +48,15 @@ class GraphicsProgram3D:
         self.UP_key_k = False
 
         # init maze
-        self.maze = Maze.Maze(3)
-        self.maze.set_random_maze()
+        self.maze = Maze.Maze(11)
+        self.maze.set_10_maze()
 
         # set camera relative to maze base
         # self.view_matrix.eye = Base3DObjects.Point(self.maze.cell_width * self.maze.size / 2, 0.5, self.maze.cell_width * self.maze.size + 1)
         # self.shader.set_view_matrix(self.view_matrix.get_matrix())
 
         # set camera to see the maze from above
-        self.view_matrix.eye = Base3DObjects.Point(self.maze.cell_width * self.maze.size / 2, 7, 5)
+        self.view_matrix.eye = Base3DObjects.Point(self.maze.cell_width * self.maze.size / 2, 20, self.maze.size + 4)
         self.view_matrix.pitch(80)
         self.shader.set_view_matrix(self.view_matrix.get_matrix())
 
