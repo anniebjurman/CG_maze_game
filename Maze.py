@@ -24,6 +24,9 @@ class Cell:
         self.wall_west = False
         self.visited = False
 
+    def to_string(self):
+        return "[" + str(self.cord.row) + "][" + str(self.cord.col)
+
 class Maze:
     def __init__(self, size):
         self.size = size

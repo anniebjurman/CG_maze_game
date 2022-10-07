@@ -53,6 +53,7 @@ class GraphicsProgram3D:
         # self.maze.set_random_maze()
         self.maze = Maze.Maze(3)
         self.maze.maze[1][1].wall_west = True
+        self.maze.maze[1][1].wall_south = True
         print(self.maze.to_string())
 
         # set camera relative to maze base
@@ -60,7 +61,7 @@ class GraphicsProgram3D:
         self.shader.set_view_matrix(self.view_matrix.get_matrix())
 
         # set camera to see the maze from above
-        # self.view_matrix.eye = Point(self.maze.cell_width * self.maze.size / 2, 5, -1)
+        # self.view_matrix.eye = Base3DObjects.Point(self.maze.cell_width * self.maze.size / 2, 5, 5)
         # self.view_matrix.pitch(80)
         # self.shader.set_view_matrix(self.view_matrix.get_matrix())
 
@@ -101,35 +102,50 @@ class GraphicsProgram3D:
         if self.UP_key_l:
             self.light_pos.x += 0.2 * delta_time
 
-        self.check_collision()
-
-
-    def check_collision(self):
-        collision_radius = 0.5
         if self.check_if_in_maze():
-            maze_pos = self.get_current_cell()
-            cell = self.maze.maze[maze_pos[0]][maze_pos[1]]
-            if cell.wall_south:
-                print("south wall")
-            elif cell.wall_west:
-                print("west wall")
-            elif cell.wall_south and cell.wall_west:
-                print("both walls")
-            else:
-                print("----")
+            self.check_collision()
 
     def check_if_in_maze(self):
-        cell_in_space = self.get_current_cell()
+        cell_in_space = self.get_current_cell_cord()
         if 0 <= cell_in_space[0] < self.maze.size and \
            0 <= cell_in_space[1] < self.maze.size:
            return True
         else:
             return False
 
-    def get_cells_to_check(self):
-        curr_cell = self.get_current_cell()
+    def check_collision(self):
+        collision_radius = 1
+        curr_cell_cord = self.get_current_cell_cord()
+        curr_cell = self.maze.maze[curr_cell_cord[0]][curr_cell_cord[1]]
 
-    def get_current_cell(self): # TODO: because trunc round to 0, the negative values get rounded the wrong direction
+        # wall to the right
+        if curr_cell.cord.col + 1 < self.maze.size:
+            right_cell = self.maze.maze[curr_cell.cord.row][curr_cell.cord.col + 1]
+            if right_cell.wall_west:
+                pass # check collition
+
+        # wall to the left (own wall)
+        if curr_cell.wall_west:
+            wall_x_value = curr_cell.cord.col * self.maze.cell_width + self.maze.wall_thickness / 2
+            if self.view_matrix.eye.x - collision_radius < wall_x_value:
+                self.view_matrix.eye.x = wall_x_value + collision_radius
+                self.shader.set_view_matrix(self.view_matrix.get_matrix())
+
+        # wall above
+        if curr_cell.cord.row - 1 >= 0:
+            cell_above = self.maze.maze[curr_cell.cord.row - 1][curr_cell.cord.col]
+            if cell_above.wall_south:
+                pass # check collision
+
+        # wall below (own wall)
+        if curr_cell.wall_south:
+            wall_z_value = (curr_cell.cord.row + 1) * self.maze.cell_width - self.maze.wall_thickness / 2
+            if self.view_matrix.eye.z + collision_radius > wall_z_value:
+                self.view_matrix.eye.z = wall_z_value - collision_radius
+                self.shader.set_view_matrix(self.view_matrix.get_matrix())
+
+
+    def get_current_cell_cord(self): # TODO: because trunc round to 0, the negative values get rounded the wrong direction
         x = math.trunc(self.view_matrix.eye.x) // self.maze.cell_width
         z = math.trunc(self.view_matrix.eye.z) // self.maze.cell_width
         return [z, x]
@@ -198,7 +214,7 @@ class GraphicsProgram3D:
 
                     trans_x = cell.cord.col * self.maze.cell_width + self.maze.cell_width / 2
                     trans_y = self.maze.wall_height / 2
-                    trans_z = (cell.cord.row + 1) * self.maze.size
+                    trans_z = (cell.cord.row + 1) * self.maze.cell_width
 
                     self.model_matrix.add_translation(trans_x, trans_y, trans_z)
                     self.model_matrix.add_scale(self.maze.cell_width + self.maze.wall_thickness,
