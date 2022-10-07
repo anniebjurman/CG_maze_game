@@ -7,9 +7,14 @@ class Wall(Enum):
     SOUTH = 1
     WEST = 2
 
+class CellCord:
+    def __init__(self, row, col):
+        self.row = row
+        self.col = col
+
 class Cell:
-    def __init__(self):
-        self.cordinates = [0,0]
+    def __init__(self, row, col):
+        self.cord = CellCord(row, col)
         self.wall_south = False
         self.wall_west = False
         self.visited = False
@@ -22,14 +27,12 @@ class Cell:
 class Maze:
     def __init__(self, size):
         self.size = size
-        #self.maze = [[Cell() for _ in range(size)] for _ in range(size)]
 
         maze = []
         for row in range(size):
             row_list = []
             for col in range(size):
-                cell = Cell()
-                cell.cordinates = [row, col]
+                cell = Cell(row, col)
                 row_list.append(cell)
             maze.append(row_list)
 

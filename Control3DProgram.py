@@ -10,9 +10,6 @@ import Shaders
 import Maze
 import Base3DObjects
 
-# TODO: Remove unused key-mappings
-#       Make cell_cord a class, and use it to represent cell cordinates
-
 class GraphicsProgram3D:
     def __init__(self):
 
@@ -54,9 +51,8 @@ class GraphicsProgram3D:
         # self.maze = Maze.Maze(3)
         # self.maze.set_small_3_maze()
         # self.maze.set_random_maze()
-        self.maze = Maze.Maze(2)
-        self.maze.maze[0][0].wall_south = True
-        self.maze.maze[1][0].wall_west = True
+        self.maze = Maze.Maze(3)
+        self.maze.maze[1][1].wall_west = True
         print(self.maze.to_string())
 
         # set camera relative to maze base
@@ -130,6 +126,9 @@ class GraphicsProgram3D:
         else:
             return False
 
+    def get_cells_to_check(self):
+        curr_cell = self.get_current_cell()
+
     def get_current_cell(self): # TODO: because trunc round to 0, the negative values get rounded the wrong direction
         x = math.trunc(self.view_matrix.eye.x) // self.maze.cell_width
         z = math.trunc(self.view_matrix.eye.z) // self.maze.cell_width
@@ -178,9 +177,9 @@ class GraphicsProgram3D:
                 if cell.wall_west:
                     self.model_matrix.push_matrix()
 
-                    trans_x = cell.cordinates[1] * self.maze.cell_width
+                    trans_x = cell.cord.col * self.maze.cell_width
                     trans_y = self.maze.wall_height / 2
-                    trans_z = cell.cordinates[0] * self.maze.cell_width + self.maze.cell_width / 2
+                    trans_z = cell.cord.row * self.maze.cell_width + self.maze.cell_width / 2
 
                     self.model_matrix.add_translation(trans_x, trans_y, trans_z)
                     self.model_matrix.add_scale(self.maze.wall_thickness,
@@ -197,9 +196,9 @@ class GraphicsProgram3D:
                 if cell.wall_south:
                     self.model_matrix.push_matrix()
 
-                    trans_x = cell.cordinates[1] * self.maze.cell_width + self.maze.cell_width / 2
+                    trans_x = cell.cord.col * self.maze.cell_width + self.maze.cell_width / 2
                     trans_y = self.maze.wall_height / 2
-                    trans_z = (cell.cordinates[0] + 1) * self.maze.size
+                    trans_z = (cell.cord.row + 1) * self.maze.size
 
                     self.model_matrix.add_translation(trans_x, trans_y, trans_z)
                     self.model_matrix.add_scale(self.maze.cell_width + self.maze.wall_thickness,
