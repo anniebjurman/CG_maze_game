@@ -11,6 +11,8 @@ import Shaders
 import Maze
 import Base3DObjects
 
+# TODO: Fix pitch
+
 class GraphicsProgram3D:
     def __init__(self):
 
@@ -54,16 +56,21 @@ class GraphicsProgram3D:
         self.maze = Maze.Maze(11)
         self.maze.set_10_maze()
 
-        # set camera relative to maze base
-        # self.view_matrix.eye = Base3DObjects.Point(self.maze.cell_width * self.maze.size / 2, 0.5, self.maze.cell_width * self.maze.size + 1)
+        #init pyramid
+        self.pyramid = Base3DObjects.Pyramid()
+
+        # self.set_camera_at_entrance()
+        self.set_camera_overview()
+
+    def set_camera_at_entrance(self):
         self.view_matrix.eye = Base3DObjects.Point(-self.maze.cell_width, 0.5, self.maze.cell_width * 2.5)
         self.view_matrix.yaw(-90)
         self.shader.set_view_matrix(self.view_matrix.get_matrix())
 
-        # # set camera to see the maze from above
-        # self.view_matrix.eye = Base3DObjects.Point(self.maze.cell_width * self.maze.size / 2, 20, self.maze.size + 4)
-        # self.view_matrix.pitch(80)
-        # self.shader.set_view_matrix(self.view_matrix.get_matrix())
+    def set_camera_overview(self):
+        self.view_matrix.eye = Base3DObjects.Point(self.maze.cell_width * self.maze.size / 2, 20, self.maze.size + 4)
+        self.view_matrix.pitch(80)
+        self.shader.set_view_matrix(self.view_matrix.get_matrix())
 
     def update(self):
         delta_time = self.clock.tick() / 1000
@@ -171,21 +178,28 @@ class GraphicsProgram3D:
 
         self.draw_maze_base()
         self.draw_maze_walls()
-        # TODO: Draw walls around maze
+        self.draw_pyramid(self.maze.cell_width * 8.5, self.maze.cell_width * 3)
+        self.draw_pyramid(self.maze.cell_width * 2, self.maze.cell_width * 9)
 
         glViewport(0, 0, 800, 600)
         self.model_matrix.load_identity()
 
-
-        # set camera to see the maze from above
-        # self.view_matrix.eye = Base3DObjects.Point(self.maze.cell_width * self.maze.size / 2, 20, self.maze.size + 4)
-        # self.view_matrix.pitch(80)
-        # self.shader.set_view_matrix(self.view_matrix.get_matrix())
-
-        # glViewport(800, 300, 200, 300)
-        # self.model_matrix.load_identity()
-
         pygame.display.flip()
+
+    def draw_pyramid(self, trans_x, trans_z):
+        color = [0.9, 0.3, 0.3]
+
+        self.model_matrix.push_matrix()
+
+        self.model_matrix.add_translation(trans_x, self.pyramid.height, trans_z)
+        self.model_matrix.add_scale(self.pyramid.width, self.pyramid.height, self.pyramid.width)
+
+        self.shader.set_model_matrix(self.model_matrix.matrix)
+        self.shader.set_material_diffuse(color[0], color[1], color[2])
+
+        self.pyramid.draw(self.shader)
+
+        self.model_matrix.pop_matrix()
 
     def draw_maze_base(self):
         base_color = [0.4, 0.4, 0.4]
@@ -196,9 +210,8 @@ class GraphicsProgram3D:
         trans_x_z = self.maze.cell_width * self.maze.size / 2
         self.model_matrix.add_translation(trans_x_z, -base_thickness / 2, trans_x_z)
 
-        scale_x = (self.maze.cell_width * self.maze.size) + self.maze.wall_thickness
-        scale_z = (self.maze.cell_width * self.maze.size) + self.maze.wall_thickness
-        self.model_matrix.add_scale(scale_x, base_thickness, scale_z)
+        scale_x_z = (self.maze.cell_width * self.maze.size) + self.maze.wall_thickness
+        self.model_matrix.add_scale(scale_x_z, base_thickness, scale_x_z)
 
         self.shader.set_model_matrix(self.model_matrix.matrix)
         self.shader.set_material_diffuse(base_color[0], base_color[1], base_color[2])

@@ -115,3 +115,30 @@ class Cube:
         glDrawArrays(GL_TRIANGLE_FAN, 12, 4)
         glDrawArrays(GL_TRIANGLE_FAN, 16, 4)
         glDrawArrays(GL_TRIANGLE_FAN, 20, 4)
+
+class Pyramid:
+    def __init__(self):
+        self.position_array = [0.0, 1.0, 0.0,
+                               -1.0, -1.0, 1.0,
+                               1.0, -1.0, 1.0,
+                               0.0, 1.0, 0.0,
+                               1.0, -1.0, 1.0,
+                               1.0, -1.0, -1.0,
+                               0.0, 1.0, 0.0,
+                               1.0, -1.0, -1.0,
+                               -1.0, -1.0, -1.0,
+                               0.0, 1.0, 0.0,
+                               -1.0,-1.0,-1.0,
+                               -1.0,-1.0, 1.0]
+        self.normal_array = []
+        self.width = 1
+        self.height = 3
+
+    def draw(self, shader):
+        shader.set_position_attribute(self.position_array)
+        # shader.set_normal_attribute(self.normal_array)
+
+        glDrawArrays(GL_TRIANGLES, 0, 3)
+        glDrawArrays(GL_TRIANGLES, 3, 3)
+        glDrawArrays(GL_TRIANGLES, 6, 3)
+        glDrawArrays(GL_TRIANGLES, 9, 3)

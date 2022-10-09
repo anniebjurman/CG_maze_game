@@ -42,8 +42,8 @@ class Maze:
 
         self.maze = maze
 
-        self.cell_width = 2
-        self.wall_thickness = 0.1
+        self.cell_width = 4
+        self.wall_thickness = 0.2
         self.wall_height = 2
 
     def set_cell(self, cell, wall):
