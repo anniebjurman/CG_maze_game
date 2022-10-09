@@ -59,8 +59,8 @@ class GraphicsProgram3D:
         #init pyramid
         self.pyramid = Base3DObjects.Pyramid()
 
-        # self.set_camera_at_entrance()
-        self.set_camera_overview()
+        self.set_camera_at_entrance()
+        # self.set_camera_overview()
 
     def set_camera_at_entrance(self):
         self.view_matrix.eye = Base3DObjects.Point(-self.maze.cell_width, 0.5, self.maze.cell_width * 2.5)
@@ -163,6 +163,10 @@ class GraphicsProgram3D:
                 self.view_matrix.eye.z = wall_z_value - collision_radius
                 self.shader.set_view_matrix(self.view_matrix.get_matrix())
 
+        # object inside cell
+        if curr_cell.object:
+            print("OBJECT")
+
 
     def get_current_cell_cord(self): # TODO: because trunc round to 0, the negative values get rounded the wrong direction
         x = math.trunc(self.view_matrix.eye.x) // self.maze.cell_width
@@ -178,19 +182,24 @@ class GraphicsProgram3D:
 
         self.draw_maze_base()
         self.draw_maze_walls()
-        self.draw_pyramid(self.maze.cell_width * 8.5, self.maze.cell_width * 3)
-        self.draw_pyramid(self.maze.cell_width * 2, self.maze.cell_width * 9)
+        self.draw_pyramid(Maze.CellCord(2, 9))
+        self.draw_pyramid(Maze.CellCord(1, 3))
+        # self.draw_pyramid(self.maze.cell_width * 8.5, self.maze.cell_width * 3)
+        # self.draw_pyramid(self.maze.cell_width * 2, self.maze.cell_width * 9)
 
         glViewport(0, 0, 800, 600)
         self.model_matrix.load_identity()
 
         pygame.display.flip()
 
-    def draw_pyramid(self, trans_x, trans_z):
+    def draw_pyramid(self, cell_cord):
         color = [0.9, 0.3, 0.3]
+        self.maze.maze[cell_cord.row][cell_cord.col].object = Maze.Object.PYRAMID
 
         self.model_matrix.push_matrix()
 
+        trans_x = self.maze.cell_width * (cell_cord.col + 0.5)
+        trans_z = self.maze.cell_width * (cell_cord.row + 0.5)
         self.model_matrix.add_translation(trans_x, self.pyramid.height, trans_z)
         self.model_matrix.add_scale(self.pyramid.width, self.pyramid.height, self.pyramid.width)
 

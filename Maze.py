@@ -8,6 +8,9 @@ class Wall(Enum):
     SOUTH = 1
     WEST = 2
 
+class Object(Enum):
+    PYRAMID = 1
+
 class CellCord:
     def __init__(self, row, col):
         self.row = row
@@ -19,6 +22,7 @@ class Cell:
         self.wall_south = False
         self.wall_west = False
         self.visited = False
+        self.object = None
 
     def reset_cell(self):
         self.wall_south = False
