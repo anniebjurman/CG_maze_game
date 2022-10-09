@@ -1,4 +1,5 @@
 import math
+from pickle import FALSE
 from OpenGL.GL import *
 from OpenGL.GLU import *
 
@@ -37,6 +38,8 @@ class GraphicsProgram3D:
         # Camera controll
         self.UP_key_right = False
         self.UP_key_left = False
+        self.UP_key_up = False
+        self.UP_key_down = False
 
         self.UP_key_w = False
         self.UP_key_s = False
@@ -53,12 +56,14 @@ class GraphicsProgram3D:
 
         # set camera relative to maze base
         # self.view_matrix.eye = Base3DObjects.Point(self.maze.cell_width * self.maze.size / 2, 0.5, self.maze.cell_width * self.maze.size + 1)
-        # self.shader.set_view_matrix(self.view_matrix.get_matrix())
-
-        # set camera to see the maze from above
-        self.view_matrix.eye = Base3DObjects.Point(self.maze.cell_width * self.maze.size / 2, 20, self.maze.size + 4)
-        self.view_matrix.pitch(80)
+        self.view_matrix.eye = Base3DObjects.Point(-self.maze.cell_width, 0.5, self.maze.cell_width * 2.5)
+        self.view_matrix.yaw(-90)
         self.shader.set_view_matrix(self.view_matrix.get_matrix())
+
+        # # set camera to see the maze from above
+        # self.view_matrix.eye = Base3DObjects.Point(self.maze.cell_width * self.maze.size / 2, 20, self.maze.size + 4)
+        # self.view_matrix.pitch(80)
+        # self.shader.set_view_matrix(self.view_matrix.get_matrix())
 
     def update(self):
         delta_time = self.clock.tick() / 1000
@@ -68,12 +73,18 @@ class GraphicsProgram3D:
             self.angle -= (2 * math.pi)
 
         # look up/down/left/right
-        new_angle = self.angle * 0.07   #controll the speed, better way of doing it?
+        new_angle = self.angle * 0.5   #controll the speed, better way of doing it?
         if self.UP_key_right:
             self.view_matrix.yaw(-new_angle)
             self.shader.set_view_matrix(self.view_matrix.get_matrix())
         if self.UP_key_left:
             self.view_matrix.yaw(new_angle)
+            self.shader.set_view_matrix(self.view_matrix.get_matrix())
+        if self.UP_key_up:
+            self.view_matrix.pitch(-new_angle)
+            self.shader.set_view_matrix(self.view_matrix.get_matrix())
+        if self.UP_key_down:
+            self.view_matrix.pitch(new_angle)
             self.shader.set_view_matrix(self.view_matrix.get_matrix())
 
         # Walk forward/backwards/lef/right
@@ -165,6 +176,15 @@ class GraphicsProgram3D:
         glViewport(0, 0, 800, 600)
         self.model_matrix.load_identity()
 
+
+        # set camera to see the maze from above
+        # self.view_matrix.eye = Base3DObjects.Point(self.maze.cell_width * self.maze.size / 2, 20, self.maze.size + 4)
+        # self.view_matrix.pitch(80)
+        # self.shader.set_view_matrix(self.view_matrix.get_matrix())
+
+        # glViewport(800, 300, 200, 300)
+        # self.model_matrix.load_identity()
+
         pygame.display.flip()
 
     def draw_maze_base(self):
@@ -246,6 +266,10 @@ class GraphicsProgram3D:
                         self.UP_key_right = True
                     elif event.key == K_LEFT:
                         self.UP_key_left = True
+                    elif event.key == K_UP:
+                        self.UP_key_up = True
+                    elif event.key == K_DOWN:
+                        self.UP_key_down = True
 
                     elif event.key == K_w:
                         self.UP_key_w = True
@@ -266,6 +290,10 @@ class GraphicsProgram3D:
                         self.UP_key_right = False
                     elif event.key == K_LEFT:
                         self.UP_key_left = False
+                    elif event.key == K_UP:
+                        self.UP_key_up = False
+                    elif event.key == K_DOWN:
+                        self.UP_key_down = False
 
                     elif event.key == K_w:
                         self.UP_key_w = False
