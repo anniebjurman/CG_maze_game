@@ -30,7 +30,7 @@ class Cell:
         self.visited = False
 
     def to_string(self):
-        return "[" + str(self.cord.row) + "][" + str(self.cord.col)
+        return "[" + str(self.cord.row) + "][" + str(self.cord.col) + "]"
 
 class Maze:
     def __init__(self, size):
@@ -49,6 +49,9 @@ class Maze:
         self.cell_width = 4
         self.wall_thickness = 0.2
         self.wall_height = 2
+
+        self.prev_cell = self.maze[1][0]
+        self.curr_cell = self.maze[0][0]
 
     def set_cell(self, cell, wall):
         if wall == Wall.SOUTH:

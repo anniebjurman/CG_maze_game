@@ -131,7 +131,7 @@ class Pyramid:
                                -1.0,-1.0,-1.0,
                                -1.0,-1.0, 1.0]
         self.normal_array = []
-        self.width = 1
+        self.width = 0.5
         self.height = 3
 
     def draw(self, shader):

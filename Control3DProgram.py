@@ -119,21 +119,20 @@ class GraphicsProgram3D:
             self.check_collision()
 
     def check_if_in_maze(self):
-        cell_in_space = self.get_current_cell_cord()
-        if 0 <= cell_in_space[0] < self.maze.size and \
-           0 <= cell_in_space[1] < self.maze.size:
+        row, col = self.get_current_cell_cord()
+        if 0 <= row < self.maze.size and \
+           0 <= col < self.maze.size:
            return True
         else:
             return False
 
     def check_collision(self):
         collision_radius = 0.5
-        curr_cell_cord = self.get_current_cell_cord()
-        curr_cell = self.maze.maze[curr_cell_cord[0]][curr_cell_cord[1]]
+        self.set_current_cell()
 
         # wall to the right
-        if curr_cell.cord.col + 1 < self.maze.size:
-            right_cell = self.maze.maze[curr_cell.cord.row][curr_cell.cord.col + 1]
+        if self.maze.curr_cell.cord.col + 1 < self.maze.size:
+            right_cell = self.maze.maze[self.maze.curr_cell.cord.row][self.maze.curr_cell.cord.col + 1]
             if right_cell.wall_west:
                 wall_x_value = right_cell.cord.col * self.maze.cell_width - self.maze.wall_thickness / 2
                 if self.view_matrix.eye.x + collision_radius > wall_x_value:
@@ -141,37 +140,44 @@ class GraphicsProgram3D:
                     self.shader.set_view_matrix(self.view_matrix.get_matrix())
 
         # wall to the left (own wall)
-        if curr_cell.wall_west:
-            wall_x_value = curr_cell.cord.col * self.maze.cell_width + self.maze.wall_thickness / 2
+        if self.maze.curr_cell.wall_west:
+            wall_x_value = self.maze.curr_cell.cord.col * self.maze.cell_width + self.maze.wall_thickness / 2
             if self.view_matrix.eye.x - collision_radius < wall_x_value:
                 self.view_matrix.eye.x = wall_x_value + collision_radius
                 self.shader.set_view_matrix(self.view_matrix.get_matrix())
 
         # wall above
-        if curr_cell.cord.row - 1 >= 0:
-            cell_above = self.maze.maze[curr_cell.cord.row - 1][curr_cell.cord.col]
+        if self.maze.curr_cell.cord.row - 1 >= 0:
+            cell_above = self.maze.maze[self.maze.curr_cell.cord.row - 1][self.maze.curr_cell.cord.col]
             if cell_above.wall_south:
-                wall_z_value = curr_cell.cord.row * self.maze.cell_width + self.maze.wall_thickness / 2
+                wall_z_value = self.maze.curr_cell.cord.row * self.maze.cell_width + self.maze.wall_thickness / 2
                 if self.view_matrix.eye.z - collision_radius < wall_z_value:
                     self.view_matrix.eye.z = wall_z_value + collision_radius
                     self.shader.set_view_matrix(self.view_matrix.get_matrix())
 
         # wall below (own wall)
-        if curr_cell.wall_south:
-            wall_z_value = (curr_cell.cord.row + 1) * self.maze.cell_width - self.maze.wall_thickness / 2
+        if self.maze.curr_cell.wall_south:
+            wall_z_value = (self.maze.curr_cell.cord.row + 1) * self.maze.cell_width - self.maze.wall_thickness / 2
             if self.view_matrix.eye.z + collision_radius > wall_z_value:
                 self.view_matrix.eye.z = wall_z_value - collision_radius
                 self.shader.set_view_matrix(self.view_matrix.get_matrix())
 
         # object inside cell
-        if curr_cell.object:
+        if self.maze.curr_cell.object:
             print("OBJECT")
 
+    def get_current_cell_cord(self):
+        col = math.trunc(self.view_matrix.eye.x) // self.maze.cell_width
+        row = math.trunc(self.view_matrix.eye.z) // self.maze.cell_width
+        return row, col
 
-    def get_current_cell_cord(self): # TODO: because trunc round to 0, the negative values get rounded the wrong direction
-        x = math.trunc(self.view_matrix.eye.x) // self.maze.cell_width
-        z = math.trunc(self.view_matrix.eye.z) // self.maze.cell_width
-        return [z, x]
+    def set_current_cell(self):
+        row, col = self.get_current_cell_cord()
+
+        if self.maze.curr_cell.cord.row != row or self.maze.curr_cell.cord.col != col:
+            self.maze.prev_cell = self.maze.curr_cell
+            self.maze.curr_cell = self.maze.maze[row][col]
+            print("curr:", self.maze.curr_cell.to_string(), "prev:", self.maze.prev_cell.to_string())
 
     def display(self):
         glEnable(GL_DEPTH_TEST)
@@ -184,8 +190,6 @@ class GraphicsProgram3D:
         self.draw_maze_walls()
         self.draw_pyramid(Maze.CellCord(2, 9))
         self.draw_pyramid(Maze.CellCord(1, 3))
-        # self.draw_pyramid(self.maze.cell_width * 8.5, self.maze.cell_width * 3)
-        # self.draw_pyramid(self.maze.cell_width * 2, self.maze.cell_width * 9)
 
         glViewport(0, 0, 800, 600)
         self.model_matrix.load_identity()
@@ -216,10 +220,10 @@ class GraphicsProgram3D:
 
         self.model_matrix.push_matrix()
 
-        trans_x_z = self.maze.cell_width * self.maze.size / 2
+        trans_x_z = self.maze.cell_width * (self.maze.size + 2) / 2
         self.model_matrix.add_translation(trans_x_z, -base_thickness / 2, trans_x_z)
 
-        scale_x_z = (self.maze.cell_width * self.maze.size) + self.maze.wall_thickness
+        scale_x_z = (self.maze.cell_width * (self.maze.size + 2)) + self.maze.wall_thickness
         self.model_matrix.add_scale(scale_x_z, base_thickness, scale_x_z)
 
         self.shader.set_model_matrix(self.model_matrix.matrix)
