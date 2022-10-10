@@ -63,7 +63,7 @@ class GraphicsProgram3D:
         # self.set_camera_overview()
 
     def set_camera_at_entrance(self):
-        self.view_matrix.eye = Base3DObjects.Point(-self.maze.cell_width, 0.5, self.maze.cell_width * 2.5)
+        self.view_matrix.eye = Base3DObjects.Point(0, 0.5, self.maze.cell_width * 2.5)
         self.view_matrix.yaw(-90)
         self.shader.set_view_matrix(self.view_matrix.get_matrix())
 
@@ -162,9 +162,25 @@ class GraphicsProgram3D:
                 self.view_matrix.eye.z = wall_z_value - collision_radius
                 self.shader.set_view_matrix(self.view_matrix.get_matrix())
 
-        # object inside cell
-        if self.maze.curr_cell.object:
-            print("OBJECT")
+        # pyramide inside cell
+        if self.maze.curr_cell.object == Maze.Object.PYRAMID:
+            bound_z = [self.maze.curr_cell.cord.row * self.maze.cell_width + (self.maze.cell_width - self.pyramid.width * 2) / 2,
+                       (self.maze.curr_cell.cord.row + 1) * self.maze.cell_width - (self.maze.cell_width - self.pyramid.width * 2) / 2]
+            # left
+            if self.maze.prev_cell.cord.col < self.maze.curr_cell.cord.col and \
+               bound_z[0] < self.view_matrix.eye.z < bound_z[1]:
+
+                pyr_x_value = self.maze.curr_cell.cord.col * self.maze.cell_width + (self.maze.cell_width - self.pyramid.width * 2) / 2
+                if self.view_matrix.eye.x + collision_radius > pyr_x_value:
+                    self.view_matrix.eye.x = pyr_x_value - collision_radius
+                    self.shader.set_view_matrix(self.view_matrix.get_matrix())
+            # right
+            elif self.maze.prev_cell.cord.col > self.maze.curr_cell.cord.col and \
+                 bound_z[0] < self.view_matrix.eye.z < bound_z[1]:
+                pyr_x_value = (self.maze.curr_cell.cord.col + 1) * self.maze.cell_width - (self.maze.cell_width - self.pyramid.width * 2) / 2
+                if self.view_matrix.eye.x - collision_radius < pyr_x_value:
+                    self.view_matrix.eye.x = pyr_x_value + collision_radius
+                    self.shader.set_view_matrix(self.view_matrix.get_matrix())
 
     def get_current_cell_cord(self):
         col = math.trunc(self.view_matrix.eye.x) // self.maze.cell_width
@@ -177,7 +193,6 @@ class GraphicsProgram3D:
         if self.maze.curr_cell.cord.row != row or self.maze.curr_cell.cord.col != col:
             self.maze.prev_cell = self.maze.curr_cell
             self.maze.curr_cell = self.maze.maze[row][col]
-            print("curr:", self.maze.curr_cell.to_string(), "prev:", self.maze.prev_cell.to_string())
 
     def display(self):
         glEnable(GL_DEPTH_TEST)
@@ -188,8 +203,8 @@ class GraphicsProgram3D:
 
         self.draw_maze_base()
         self.draw_maze_walls()
-        self.draw_pyramid(Maze.CellCord(2, 9))
-        self.draw_pyramid(Maze.CellCord(1, 3))
+        self.draw_pyramid(Maze.CellCord(1, 9))
+        self.draw_pyramid(Maze.CellCord(8, 8))
 
         glViewport(0, 0, 800, 600)
         self.model_matrix.load_identity()
@@ -202,8 +217,8 @@ class GraphicsProgram3D:
 
         self.model_matrix.push_matrix()
 
-        trans_x = self.maze.cell_width * (cell_cord.col + 0.5)
-        trans_z = self.maze.cell_width * (cell_cord.row + 0.5)
+        trans_x = self.maze.cell_width * cell_cord.col + (self.maze.cell_width / 2)
+        trans_z = self.maze.cell_width * cell_cord.row + (self.maze.cell_width / 2)
         self.model_matrix.add_translation(trans_x, self.pyramid.height, trans_z)
         self.model_matrix.add_scale(self.pyramid.width, self.pyramid.height, self.pyramid.width)
 
@@ -220,10 +235,10 @@ class GraphicsProgram3D:
 
         self.model_matrix.push_matrix()
 
-        trans_x_z = self.maze.cell_width * (self.maze.size + 2) / 2
+        trans_x_z = self.maze.cell_width * self.maze.size / 2
         self.model_matrix.add_translation(trans_x_z, -base_thickness / 2, trans_x_z)
 
-        scale_x_z = (self.maze.cell_width * (self.maze.size + 2)) + self.maze.wall_thickness
+        scale_x_z = (self.maze.cell_width * self.maze.size) + self.maze.wall_thickness
         self.model_matrix.add_scale(scale_x_z, base_thickness, scale_x_z)
 
         self.shader.set_model_matrix(self.model_matrix.matrix)
