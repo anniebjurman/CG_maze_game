@@ -167,18 +167,15 @@ class ViewMatrix:
                         - ang_sin * n_org.z + ang_cos * self.u.z)
 
     # rotate all the vectors (u, v and n) about the base y-axis
-    # def turn(self, angle):
-    #     ang_cos = cos(angle * math.pi/180.0)
-    #     ang_sin = sin(angle * math.pi/180.0)
-    #     n_org = self.n # store original n
+    def turn(self, angle):
+        self.u = self.rotate_around_y(self.u, angle * math.pi / 180)
+        self.v = self.rotate_around_y(self.v, angle * math.pi / 180)
+        self.n = self.rotate_around_y(self.n, angle * math.pi / 180)
 
-    #     self.n = Vector(ang_cos * n_org.x + ang_sin * self.u.x,
-    #                     ang_cos * n_org.y + ang_sin * self.u.y,
-    #                     ang_cos * n_org.z + ang_sin * self.u.z)
-
-    #     self.u = Vector(- ang_sin * n_org.x + ang_cos * self.u.x,
-    #                     - ang_sin * n_org.y + ang_cos * self.u.y,
-    #                     - ang_sin * n_org.z + ang_cos * self.u.z)
+    def rotate_around_y(self, v, angle):
+        return Vector(v.x * math.cos(angle) + v.z * math.sin(angle),
+                      v.y,
+                      v.x * -math.sin(angle) + v.z * math.cos(angle))
 
     def get_matrix(self):
         minusEye = Vector(-self.eye.x, -self.eye.y, -self.eye.z)

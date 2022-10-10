@@ -83,10 +83,10 @@ class GraphicsProgram3D:
         # look up/down/left/right
         new_angle = self.angle * 0.5   #controll the speed, better way of doing it?
         if self.UP_key_right:
-            self.view_matrix.yaw(-new_angle)
+            self.view_matrix.turn(-new_angle)
             self.shader.set_view_matrix(self.view_matrix.get_matrix())
         if self.UP_key_left:
-            self.view_matrix.yaw(new_angle)
+            self.view_matrix.turn(new_angle)
             self.shader.set_view_matrix(self.view_matrix.get_matrix())
         if self.UP_key_up:
             self.view_matrix.pitch(-new_angle)
