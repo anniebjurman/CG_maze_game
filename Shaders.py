@@ -39,9 +39,15 @@ class Shader3D:
         self.projectionMatrixLoc = glGetUniformLocation(self.renderingProgramID, "u_projection_matrix")
         self.viewMatrixLoc = glGetUniformLocation(self.renderingProgramID, "u_view_matrix")
 
-        # Lights
-        self.lightPosLoc = glGetUniformLocation(self.renderingProgramID, "u_light_position")
-        self.lightColLoc = glGetUniformLocation(self.renderingProgramID, "u_light_color")
+        # Light1
+        self.lightPosLoc1 = glGetUniformLocation(self.renderingProgramID, "u_light_position_1")
+        self.lightColLoc1 = glGetUniformLocation(self.renderingProgramID, "u_light_color_1")
+
+        # Light2
+        self.lightPosLoc2 = glGetUniformLocation(self.renderingProgramID, "u_light_position_2")
+        self.lightColLoc2 = glGetUniformLocation(self.renderingProgramID, "u_light_color_2")
+
+        # general lights
         self.matDifLoc = glGetUniformLocation(self.renderingProgramID, "u_material_diffuse")
         self.matSpecLoc = glGetUniformLocation(self.renderingProgramID, "u_material_specular")
         self.matShineLoc = glGetUniformLocation(self.renderingProgramID, "u_material_shininess")
@@ -74,13 +80,21 @@ class Shader3D:
     def set_normal_attribute(self, vertex_array):
         glVertexAttribPointer(self.normalLoc, 3, GL_FLOAT, False, 0, vertex_array)
 
-    # Lights
-    def set_light_position(self, pos):
-        glUniform4f(self.lightPosLoc, pos.x, pos.y, pos.z, 1.0)
+    # Light1
+    def set_light_position_1(self, pos):
+        glUniform4f(self.lightPosLoc1, pos.x, pos.y, pos.z, 1.0)
 
-    def set_light_color(self, r, g, b):
-        glUniform4f(self.lightColLoc, r, g, b, 1.0)
+    def set_light_color_1(self, r, g, b):
+        glUniform4f(self.lightColLoc1, r, g, b, 1.0)
 
+    # Light2
+    def set_light_position_2(self, pos):
+        glUniform4f(self.lightPosLoc2, pos.x, pos.y, pos.z, 1.0)
+
+    def set_light_color_2(self, r, g, b):
+        glUniform4f(self.lightColLoc2, r, g, b, 1.0)
+
+    # general lights
     def set_material_diffuse(self, r, g, b):
         glUniform4f(self.matDifLoc, r, g, b, 1.0)
 

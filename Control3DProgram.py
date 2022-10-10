@@ -35,7 +35,8 @@ class GraphicsProgram3D:
 
         self.angle = 0
 
-        self.light_pos = Base3DObjects.Point(0, 5, 5)
+        self.light_pos_1 = Base3DObjects.Point(0, 5, 5)
+        self.light_pos_2 = Base3DObjects.Point(5, 10, 10)
 
         # Camera controll
         self.UP_key_right = False
@@ -174,7 +175,7 @@ class GraphicsProgram3D:
                 if self.view_matrix.eye.x + collision_radius > pyr_x_value:
                     self.view_matrix.eye.x = pyr_x_value - collision_radius
                     self.shader.set_view_matrix(self.view_matrix.get_matrix())
-                    self.pyramid.set_random_color()
+                    self.pyramid.set_gradient_color()
             # right
             elif self.maze.prev_cell.cord.col > self.maze.curr_cell.cord.col and \
                  bound_z[0] < self.view_matrix.eye.z < bound_z[1]:
@@ -182,7 +183,7 @@ class GraphicsProgram3D:
                 if self.view_matrix.eye.x - collision_radius < pyr_x_value:
                     self.view_matrix.eye.x = pyr_x_value + collision_radius
                     self.shader.set_view_matrix(self.view_matrix.get_matrix())
-                    self.pyramid.set_random_color()
+                    self.pyramid.set_gradient_color()
 
     def get_current_cell_cord(self):
         col = math.trunc(self.view_matrix.eye.x) // self.maze.cell_width
@@ -200,8 +201,14 @@ class GraphicsProgram3D:
         glEnable(GL_DEPTH_TEST)
         glClearColor(0.1, 0.2, 0.2, 1.0)
         glClear(GL_COLOR_BUFFER_BIT|GL_DEPTH_BUFFER_BIT)
-        self.shader.set_light_position(self.light_pos)
-        self.shader.set_light_color(1, 1, 1)
+
+        #light1
+        self.shader.set_light_position_1(self.light_pos_1)
+        self.shader.set_light_color_1(1, 1, 1)
+
+        #light2
+        self.shader.set_light_position_2(self.light_pos_2)
+        self.shader.set_light_color_2(1, 0, 0)
 
         self.draw_maze_base()
         self.draw_maze_walls()
