@@ -81,7 +81,7 @@ class GraphicsProgram3D:
             self.angle -= (2 * math.pi)
 
         # look up/down/left/right
-        new_angle = self.angle * 0.5   #controll the speed, better way of doing it?
+        new_angle = self.angle * 0.6
         if self.UP_key_right:
             self.view_matrix.turn(-new_angle)
             self.shader.set_view_matrix(self.view_matrix.get_matrix())
@@ -96,7 +96,7 @@ class GraphicsProgram3D:
             self.shader.set_view_matrix(self.view_matrix.get_matrix())
 
         # Walk forward/backwards/lef/right
-        walk_speed = 3 * delta_time
+        walk_speed = 4 * delta_time
         if self.UP_key_w:
             self.view_matrix.walk(0, 0, -walk_speed)
             self.shader.set_view_matrix(self.view_matrix.get_matrix())
@@ -204,11 +204,13 @@ class GraphicsProgram3D:
 
         #light1
         self.shader.set_light_position_1(self.light_pos_1)
-        self.shader.set_light_color_1(1, 1, 1)
+        self.shader.set_light_color_1(0.7, 0.7, 0.7)
 
         #light2
         self.shader.set_light_position_2(self.light_pos_2)
-        self.shader.set_light_color_2(1, 0, 0)
+        self.shader.set_light_color_2(0.3, 0.3, 0.3)
+
+        self.shader.set_material_specular(0.1, 0.1, 0.1)
 
         self.draw_maze_base()
         self.draw_maze_walls()
@@ -238,7 +240,7 @@ class GraphicsProgram3D:
         self.model_matrix.pop_matrix()
 
     def draw_maze_base(self):
-        base_color = [0.4, 0.4, 0.4]
+        base_color = [0.1, 0.1, 0.1]
         base_thickness = 0.1
 
         self.model_matrix.push_matrix()

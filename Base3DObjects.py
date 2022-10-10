@@ -135,7 +135,7 @@ class Pyramid:
         self.normal_array = []
         self.width = 1.5
         self.height = 3
-        self.color = [0.5, 0.2, 0.9]
+        self.color = [0.8, 0.1, 0.1]
 
     def draw(self, shader):
         shader.set_position_attribute(self.position_array)
