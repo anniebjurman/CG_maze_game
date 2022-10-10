@@ -1,7 +1,9 @@
+from random import randint
 from OpenGL.GL import *
 from OpenGL.GLU import *
 
 import math
+import random
 
 class Point:
     def __init__(self, x, y, z):
@@ -133,6 +135,7 @@ class Pyramid:
         self.normal_array = []
         self.width = 1.5
         self.height = 3
+        self.color = [0.3, 0.2, 0.9]
 
     def draw(self, shader):
         shader.set_position_attribute(self.position_array)
@@ -142,3 +145,10 @@ class Pyramid:
         glDrawArrays(GL_TRIANGLES, 3, 3)
         glDrawArrays(GL_TRIANGLES, 6, 3)
         glDrawArrays(GL_TRIANGLES, 9, 3)
+
+    def set_random_color(self):
+        rand_r = random.uniform(0, 1)
+        rand_g = random.uniform(0, 1)
+        rand_b = random.uniform(0, 1)
+
+        self.color = [rand_r, rand_g, rand_b]

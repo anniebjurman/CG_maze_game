@@ -174,6 +174,7 @@ class GraphicsProgram3D:
                 if self.view_matrix.eye.x + collision_radius > pyr_x_value:
                     self.view_matrix.eye.x = pyr_x_value - collision_radius
                     self.shader.set_view_matrix(self.view_matrix.get_matrix())
+                    self.pyramid.set_random_color()
             # right
             elif self.maze.prev_cell.cord.col > self.maze.curr_cell.cord.col and \
                  bound_z[0] < self.view_matrix.eye.z < bound_z[1]:
@@ -181,6 +182,7 @@ class GraphicsProgram3D:
                 if self.view_matrix.eye.x - collision_radius < pyr_x_value:
                     self.view_matrix.eye.x = pyr_x_value + collision_radius
                     self.shader.set_view_matrix(self.view_matrix.get_matrix())
+                    self.pyramid.set_random_color()
 
     def get_current_cell_cord(self):
         col = math.trunc(self.view_matrix.eye.x) // self.maze.cell_width
@@ -212,7 +214,6 @@ class GraphicsProgram3D:
         pygame.display.flip()
 
     def draw_pyramid(self, cell_cord):
-        color = [0.9, 0.3, 0.3]
         self.maze.maze[cell_cord.row][cell_cord.col].object = Maze.Object.PYRAMID
 
         self.model_matrix.push_matrix()
@@ -223,7 +224,7 @@ class GraphicsProgram3D:
         self.model_matrix.add_scale(self.pyramid.width, self.pyramid.height, self.pyramid.width)
 
         self.shader.set_model_matrix(self.model_matrix.matrix)
-        self.shader.set_material_diffuse(color[0], color[1], color[2])
+        self.shader.set_material_diffuse(self.pyramid.color[0], self.pyramid.color[1], self.pyramid.color[2])
 
         self.pyramid.draw(self.shader)
 
