@@ -25,7 +25,7 @@ class GraphicsProgram3D:
         self.model_matrix = Matrices.ModelMatrix()
 
         self.projection_matrix = Matrices.ProjectionMatrix()
-        self.projection_matrix.set_perspective(60, 1920/1080, 0.2, 40)
+        self.projection_matrix.set_perspective(60, 1920/1080, 0.2, 60)
         self.shader.set_projection_matrix(self.projection_matrix.get_matrix())
 
         self.view_matrix = Matrices.ViewMatrix()
@@ -34,9 +34,7 @@ class GraphicsProgram3D:
         self.clock.tick()
 
         self.angle = 0
-
-        self.light_pos_1 = Base3DObjects.Point(0, 5, 5)
-        self.light_pos_2 = Base3DObjects.Point(5, 10, 10)
+        self.collision_radius = 0.5
 
         # Camera controll
         self.UP_key_right = False
@@ -49,7 +47,7 @@ class GraphicsProgram3D:
         self.UP_key_a = False
         self.UP_key_d = False
 
-        #light
+        # Light
         self.UP_key_l = False
         self.UP_key_k = False
 
@@ -60,6 +58,9 @@ class GraphicsProgram3D:
         #init pyramid
         self.pyramid = Base3DObjects.Pyramid()
 
+        self.light_pos_1 = Base3DObjects.Point(self.maze.size * self.maze.cell_width / 2, 10, 0)
+        self.light_pos_2 = Base3DObjects.Point(self.maze.size * self.maze.cell_width / 2, 10, self.maze.size * self.maze.cell_width)
+
         self.set_camera_at_entrance()
         # self.set_camera_overview()
 
@@ -69,8 +70,11 @@ class GraphicsProgram3D:
         self.shader.set_view_matrix(self.view_matrix.get_matrix())
 
     def set_camera_overview(self):
-        self.view_matrix.eye = Base3DObjects.Point(self.maze.cell_width * self.maze.size / 2, 20, self.maze.size + 4)
-        self.view_matrix.pitch(80)
+        self.projection_matrix.set_perspective(60, 1920/1080, 25, 50)
+        self.shader.set_projection_matrix(self.projection_matrix.get_matrix())
+
+        self.view_matrix.eye = Base3DObjects.Point(self.maze.cell_width * self.maze.size / 2, 30, self.maze.size * self.maze.cell_width)
+        self.view_matrix.pitch(57)
         self.shader.set_view_matrix(self.view_matrix.get_matrix())
 
     def update(self):
@@ -128,7 +132,6 @@ class GraphicsProgram3D:
             return False
 
     def check_collision(self):
-        collision_radius = 0.5
         self.set_current_cell()
 
         # wall to the right
@@ -136,15 +139,15 @@ class GraphicsProgram3D:
             right_cell = self.maze.maze[self.maze.curr_cell.cord.row][self.maze.curr_cell.cord.col + 1]
             if right_cell.wall_west:
                 wall_x_value = right_cell.cord.col * self.maze.cell_width - self.maze.wall_thickness / 2
-                if self.view_matrix.eye.x + collision_radius > wall_x_value:
-                    self.view_matrix.eye.x = wall_x_value - collision_radius
+                if self.view_matrix.eye.x + self.collision_radius > wall_x_value:
+                    self.view_matrix.eye.x = wall_x_value - self.collision_radius
                     self.shader.set_view_matrix(self.view_matrix.get_matrix())
 
         # wall to the left (own wall)
         if self.maze.curr_cell.wall_west:
             wall_x_value = self.maze.curr_cell.cord.col * self.maze.cell_width + self.maze.wall_thickness / 2
-            if self.view_matrix.eye.x - collision_radius < wall_x_value:
-                self.view_matrix.eye.x = wall_x_value + collision_radius
+            if self.view_matrix.eye.x - self.collision_radius < wall_x_value:
+                self.view_matrix.eye.x = wall_x_value + self.collision_radius
                 self.shader.set_view_matrix(self.view_matrix.get_matrix())
 
         # wall above
@@ -152,15 +155,15 @@ class GraphicsProgram3D:
             cell_above = self.maze.maze[self.maze.curr_cell.cord.row - 1][self.maze.curr_cell.cord.col]
             if cell_above.wall_south:
                 wall_z_value = self.maze.curr_cell.cord.row * self.maze.cell_width + self.maze.wall_thickness / 2
-                if self.view_matrix.eye.z - collision_radius < wall_z_value:
-                    self.view_matrix.eye.z = wall_z_value + collision_radius
+                if self.view_matrix.eye.z - self.collision_radius < wall_z_value:
+                    self.view_matrix.eye.z = wall_z_value + self.collision_radius
                     self.shader.set_view_matrix(self.view_matrix.get_matrix())
 
         # wall below (own wall)
         if self.maze.curr_cell.wall_south:
             wall_z_value = (self.maze.curr_cell.cord.row + 1) * self.maze.cell_width - self.maze.wall_thickness / 2
-            if self.view_matrix.eye.z + collision_radius > wall_z_value:
-                self.view_matrix.eye.z = wall_z_value - collision_radius
+            if self.view_matrix.eye.z + self.collision_radius > wall_z_value:
+                self.view_matrix.eye.z = wall_z_value - self.collision_radius
                 self.shader.set_view_matrix(self.view_matrix.get_matrix())
 
         # pyramide inside cell
@@ -172,16 +175,16 @@ class GraphicsProgram3D:
                bound_z[0] < self.view_matrix.eye.z < bound_z[1]:
 
                 pyr_x_value = self.maze.curr_cell.cord.col * self.maze.cell_width + (self.maze.cell_width - self.pyramid.width * 2) / 2
-                if self.view_matrix.eye.x + collision_radius > pyr_x_value:
-                    self.view_matrix.eye.x = pyr_x_value - collision_radius
+                if self.view_matrix.eye.x + self.collision_radius > pyr_x_value:
+                    self.view_matrix.eye.x = pyr_x_value - self.collision_radius
                     self.shader.set_view_matrix(self.view_matrix.get_matrix())
                     self.pyramid.set_gradient_color()
             # right
             elif self.maze.prev_cell.cord.col > self.maze.curr_cell.cord.col and \
                  bound_z[0] < self.view_matrix.eye.z < bound_z[1]:
                 pyr_x_value = (self.maze.curr_cell.cord.col + 1) * self.maze.cell_width - (self.maze.cell_width - self.pyramid.width * 2) / 2
-                if self.view_matrix.eye.x - collision_radius < pyr_x_value:
-                    self.view_matrix.eye.x = pyr_x_value + collision_radius
+                if self.view_matrix.eye.x - self.collision_radius < pyr_x_value:
+                    self.view_matrix.eye.x = pyr_x_value + self.collision_radius
                     self.shader.set_view_matrix(self.view_matrix.get_matrix())
                     self.pyramid.set_gradient_color()
 
@@ -204,18 +207,20 @@ class GraphicsProgram3D:
 
         #light1
         self.shader.set_light_position_1(self.light_pos_1)
-        self.shader.set_light_color_1(0.7, 0.7, 0.7)
+        self.shader.set_light_color_1(.7, .7, .7)
 
         #light2
         self.shader.set_light_position_2(self.light_pos_2)
-        self.shader.set_light_color_2(0.3, 0.3, 0.3)
+        self.shader.set_light_color_2(.3, 0, 0)
 
         self.shader.set_material_specular(0.1, 0.1, 0.1)
+        self.shader.set_material_shine(0.1)
 
         self.draw_maze_base()
         self.draw_maze_walls()
         self.draw_pyramid(Maze.CellCord(1, 9))
         self.draw_pyramid(Maze.CellCord(8, 8))
+        self.draw_pyramid(Maze.CellCord(7, 5))
 
         glViewport(0, 0, 800, 600)
         self.model_matrix.load_identity()
@@ -240,7 +245,7 @@ class GraphicsProgram3D:
         self.model_matrix.pop_matrix()
 
     def draw_maze_base(self):
-        base_color = [0.1, 0.1, 0.1]
+        base_color = [0, 0.01, 0.01]
         base_thickness = 0.1
 
         self.model_matrix.push_matrix()
@@ -259,6 +264,7 @@ class GraphicsProgram3D:
 
     def draw_maze_walls(self):
         wall_color = [0.7, 0.4, 0.1]
+        wall_color = [0.5, 0.5, 0.5]
 
         for row in self.maze.maze:
             for cell in row:

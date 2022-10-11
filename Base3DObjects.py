@@ -135,11 +135,10 @@ class Pyramid:
         self.normal_array = []
         self.width = 1.5
         self.height = 3
-        self.color = [0.8, 0.1, 0.1]
+        self.color = [0.8, 0.5, 0.1]
 
     def draw(self, shader):
         shader.set_position_attribute(self.position_array)
-        # shader.set_normal_attribute(self.normal_array)
 
         glDrawArrays(GL_TRIANGLES, 0, 3)
         glDrawArrays(GL_TRIANGLES, 3, 3)
