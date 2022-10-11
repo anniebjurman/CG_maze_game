@@ -125,6 +125,9 @@ class GraphicsProgram3D:
         if self.check_if_in_maze():
             self.check_collision()
 
+        if self.check_if_win():
+            print("Win!")
+
     def check_if_in_maze(self):
         row, col = self.get_current_cell_cord()
         if 0 <= row < self.maze.size and \
@@ -230,6 +233,16 @@ class GraphicsProgram3D:
     def add_pyramid(self, cell_cord):
         pyr = Base3DObjects.Pyramid()
         self.maze.maze[cell_cord.row][cell_cord.col].object = pyr
+
+    def check_if_win(self):
+        result = []
+
+        for row in self.maze.maze:
+            for cell in row:
+                if cell.object:
+                    result.append(cell.object.taken)
+
+        return all(result)
 
     def draw_pyramids(self):
         for row in self.maze.maze:
