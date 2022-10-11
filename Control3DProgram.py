@@ -55,8 +55,10 @@ class GraphicsProgram3D:
         self.maze = Maze.Maze(11)
         self.maze.set_10_maze()
 
-        #init pyramid
-        self.pyramid = Base3DObjects.Pyramid()
+        # Pyramids
+        self.add_pyramid(Maze.CellCord(1, 9))
+        self.add_pyramid(Maze.CellCord(8, 8))
+        self.add_pyramid(Maze.CellCord(7, 5))
 
         self.light_pos_1 = Base3DObjects.Point(self.maze.size * self.maze.cell_width / 2, 10, 0)
         self.light_pos_2 = Base3DObjects.Point(self.maze.size * self.maze.cell_width / 2, 10, self.maze.size * self.maze.cell_width)
@@ -167,26 +169,26 @@ class GraphicsProgram3D:
                 self.shader.set_view_matrix(self.view_matrix.get_matrix())
 
         # pyramide inside cell
-        if self.maze.curr_cell.object == Maze.Object.PYRAMID:
-            bound_z = [self.maze.curr_cell.cord.row * self.maze.cell_width + (self.maze.cell_width - self.pyramid.width * 2) / 2,
-                       (self.maze.curr_cell.cord.row + 1) * self.maze.cell_width - (self.maze.cell_width - self.pyramid.width * 2) / 2]
+        if self.maze.curr_cell.object:
+            bound_z = [self.maze.curr_cell.cord.row * self.maze.cell_width + (self.maze.cell_width - self.maze.curr_cell.object.width * 2) / 2,
+                       (self.maze.curr_cell.cord.row + 1) * self.maze.cell_width - (self.maze.cell_width - self.maze.curr_cell.object.width * 2) / 2]
             # left
             if self.maze.prev_cell.cord.col < self.maze.curr_cell.cord.col and \
                bound_z[0] < self.view_matrix.eye.z < bound_z[1]:
 
-                pyr_x_value = self.maze.curr_cell.cord.col * self.maze.cell_width + (self.maze.cell_width - self.pyramid.width * 2) / 2
+                pyr_x_value = self.maze.curr_cell.cord.col * self.maze.cell_width + (self.maze.cell_width - self.maze.curr_cell.object.width * 2) / 2
                 if self.view_matrix.eye.x + self.collision_radius > pyr_x_value:
                     self.view_matrix.eye.x = pyr_x_value - self.collision_radius
                     self.shader.set_view_matrix(self.view_matrix.get_matrix())
-                    self.pyramid.set_gradient_color()
+                    self.maze.curr_cell.object.set_gradient_color()
             # right
             elif self.maze.prev_cell.cord.col > self.maze.curr_cell.cord.col and \
                  bound_z[0] < self.view_matrix.eye.z < bound_z[1]:
-                pyr_x_value = (self.maze.curr_cell.cord.col + 1) * self.maze.cell_width - (self.maze.cell_width - self.pyramid.width * 2) / 2
+                pyr_x_value = (self.maze.curr_cell.cord.col + 1) * self.maze.cell_width - (self.maze.cell_width - self.maze.curr_cell.object.width * 2) / 2
                 if self.view_matrix.eye.x - self.collision_radius < pyr_x_value:
                     self.view_matrix.eye.x = pyr_x_value + self.collision_radius
                     self.shader.set_view_matrix(self.view_matrix.get_matrix())
-                    self.pyramid.set_gradient_color()
+                    self.maze.curr_cell.object.set_gradient_color()
 
     def get_current_cell_cord(self):
         col = math.trunc(self.view_matrix.eye.x) // self.maze.cell_width
@@ -218,31 +220,34 @@ class GraphicsProgram3D:
 
         self.draw_maze_base()
         self.draw_maze_walls()
-        self.draw_pyramid(Maze.CellCord(1, 9))
-        self.draw_pyramid(Maze.CellCord(8, 8))
-        self.draw_pyramid(Maze.CellCord(7, 5))
+        self.draw_pyramids()
 
         glViewport(0, 0, 800, 600)
         self.model_matrix.load_identity()
 
         pygame.display.flip()
 
-    def draw_pyramid(self, cell_cord):
-        self.maze.maze[cell_cord.row][cell_cord.col].object = Maze.Object.PYRAMID
+    def add_pyramid(self, cell_cord):
+        pyr = Base3DObjects.Pyramid()
+        self.maze.maze[cell_cord.row][cell_cord.col].object = pyr
 
-        self.model_matrix.push_matrix()
+    def draw_pyramids(self):
+        for row in self.maze.maze:
+            for cell in row:
+                if cell.object:
+                    self.model_matrix.push_matrix()
 
-        trans_x = self.maze.cell_width * cell_cord.col + (self.maze.cell_width / 2)
-        trans_z = self.maze.cell_width * cell_cord.row + (self.maze.cell_width / 2)
-        self.model_matrix.add_translation(trans_x, self.pyramid.height, trans_z)
-        self.model_matrix.add_scale(self.pyramid.width, self.pyramid.height, self.pyramid.width)
+                    trans_x = self.maze.cell_width * cell.cord.col + (self.maze.cell_width / 2)
+                    trans_z = self.maze.cell_width * cell.cord.row + (self.maze.cell_width / 2)
+                    self.model_matrix.add_translation(trans_x, cell.object.height, trans_z)
+                    self.model_matrix.add_scale(cell.object.width, cell.object.height, cell.object.width)
 
-        self.shader.set_model_matrix(self.model_matrix.matrix)
-        self.shader.set_material_diffuse(self.pyramid.color[0], self.pyramid.color[1], self.pyramid.color[2])
+                    self.shader.set_model_matrix(self.model_matrix.matrix)
+                    self.shader.set_material_diffuse(cell.object.color[0], cell.object.color[1], cell.object.color[2])
 
-        self.pyramid.draw(self.shader)
+                    cell.object.draw(self.shader)
 
-        self.model_matrix.pop_matrix()
+                    self.model_matrix.pop_matrix()
 
     def draw_maze_base(self):
         base_color = [0, 0.01, 0.01]
