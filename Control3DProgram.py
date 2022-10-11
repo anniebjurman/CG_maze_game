@@ -180,7 +180,7 @@ class GraphicsProgram3D:
                 if self.view_matrix.eye.x + self.collision_radius > pyr_x_value:
                     self.view_matrix.eye.x = pyr_x_value - self.collision_radius
                     self.shader.set_view_matrix(self.view_matrix.get_matrix())
-                    self.maze.curr_cell.object.set_gradient_color()
+                    self.maze.curr_cell.object.set_taken()
             # right
             elif self.maze.prev_cell.cord.col > self.maze.curr_cell.cord.col and \
                  bound_z[0] < self.view_matrix.eye.z < bound_z[1]:
@@ -188,7 +188,7 @@ class GraphicsProgram3D:
                 if self.view_matrix.eye.x - self.collision_radius < pyr_x_value:
                     self.view_matrix.eye.x = pyr_x_value + self.collision_radius
                     self.shader.set_view_matrix(self.view_matrix.get_matrix())
-                    self.maze.curr_cell.object.set_gradient_color()
+                    self.maze.curr_cell.object.set_taken()
 
     def get_current_cell_cord(self):
         col = math.trunc(self.view_matrix.eye.x) // self.maze.cell_width
