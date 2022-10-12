@@ -47,10 +47,6 @@ class GraphicsProgram3D:
         self.UP_key_a = False
         self.UP_key_d = False
 
-        # Light
-        self.UP_key_l = False
-        self.UP_key_k = False
-
         # init maze
         self.maze = Maze.Maze(11)
         self.maze.set_10_maze()
@@ -102,7 +98,7 @@ class GraphicsProgram3D:
             self.shader.set_view_matrix(self.view_matrix.get_matrix())
 
         # Walk forward/backwards/lef/right
-        walk_speed = 4 * delta_time
+        walk_speed = 5 * delta_time
         if self.UP_key_w:
             self.view_matrix.walk(0, 0, -walk_speed)
             self.shader.set_view_matrix(self.view_matrix.get_matrix())
@@ -115,12 +111,6 @@ class GraphicsProgram3D:
         if self.UP_key_d:
             self.view_matrix.walk(walk_speed, 0, 0)
             self.shader.set_view_matrix(self.view_matrix.get_matrix())
-
-        # move light
-        if self.UP_key_k:
-            self.light_pos.x -= 0.2 * delta_time
-        if self.UP_key_l:
-            self.light_pos.x += 0.2 * delta_time
 
         if self.check_if_in_maze():
             self.check_collision()
@@ -355,11 +345,6 @@ class GraphicsProgram3D:
                     elif event.key == K_d:
                         self.UP_key_d = True
 
-                    elif event.key == K_l:
-                        self.UP_key_l = True
-                    elif event.key == K_k:
-                        self.UP_key_k = True
-
                 elif event.type == pygame.KEYUP:
                     if event.key == K_RIGHT:
                         self.UP_key_right = False
@@ -378,11 +363,6 @@ class GraphicsProgram3D:
                         self.UP_key_a = False
                     elif event.key == K_d:
                         self.UP_key_d = False
-
-                    elif event.key == K_l:
-                        self.UP_key_l = False
-                    elif event.key == K_k:
-                        self.UP_key_k = False
 
             self.update()
             self.display()
