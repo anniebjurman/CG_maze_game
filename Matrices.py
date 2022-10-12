@@ -34,7 +34,6 @@ class ModelMatrix:
                 counter += 1
         self.matrix = new_matrix
 
-    # OPERATIONS
     def add_scale(self, x = 1, y = 1, z = 1):
         other_matrix = [x, 0, 0, 0,
                         0, y, 0, 0,
@@ -73,15 +72,12 @@ class ModelMatrix:
 
         self.add_transformation(other_matrix)
 
-    # YOU CAN TRY TO MAKE PUSH AND POP (AND COPY) LESS DEPENDANT ON GARBAGE COLLECTION
-    # THAT CAN FIX SMOOTHNESS ISSUES ON SOME COMPUTERS
     def push_matrix(self):
         self.stack.append(self.copy_matrix())
 
     def pop_matrix(self):
         self.matrix = self.stack.pop()
 
-    # This operation mainly for debugging
     def __str__(self):
         ret_str = ""
         counter = 0
@@ -106,8 +102,6 @@ class ViewMatrix:
         self.v = Vector(0, 1, 0)
         self.n = Vector(0, 0, 1)
 
-    ## MAKE OPERATIONS TO ADD LOOK, SLIDE, PITCH, YAW and ROLL ##
-
     def look(self, eye: Vector, center: Vector, up: Vector):
         self.eye = eye
         self.n = Vector(eye[0] - center[0], eye[1] - center[1], eye[2] - center[2])
@@ -119,7 +113,7 @@ class ViewMatrix:
         self.eye.y += del_u * self.u.y + del_v * self.v.y + del_n* self.n.y
         self.eye.z += del_u * self.u.z + del_v * self.v.z + del_n * self.n.z
 
-    # not change the or use the y-coordinates of the camera’s coordinate frame.
+    # Does not change or use the y-coordinates of the camera’s coordinate frame.
     def walk(self, del_u, del_v, del_n):
         self.eye.x += del_u * self.u.x + del_v * self.v.x + del_n * self.n.x
         self.eye.z += del_u * self.u.z + del_v * self.v.z + del_n * self.n.z

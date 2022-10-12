@@ -1,5 +1,4 @@
 import math
-from pickle import FALSE
 from OpenGL.GL import *
 from OpenGL.GLU import *
 
@@ -10,8 +9,6 @@ import Matrices
 import Shaders
 import Maze
 import Base3DObjects
-
-# TODO: Fix pitch
 
 class GraphicsProgram3D:
     def __init__(self):
@@ -197,16 +194,16 @@ class GraphicsProgram3D:
 
     def display(self):
         glEnable(GL_DEPTH_TEST)
-        glClearColor(0.1, 0.2, 0.2, 1.0)
+        glClearColor(0.7, 0.9, 1, 1.0)
         glClear(GL_COLOR_BUFFER_BIT|GL_DEPTH_BUFFER_BIT)
 
         #light1
         self.shader.set_light_position_1(self.light_pos_1)
-        self.shader.set_light_color_1(.7, .7, .7)
+        self.shader.set_light_color_1(0.5, 0.5, 0.5)
 
         #light2
         self.shader.set_light_position_2(self.light_pos_2)
-        self.shader.set_light_color_2(.3, 0, 0)
+        self.shader.set_light_color_2(0.8, 0.5, 0.1)
 
         self.shader.set_material_specular(0.1, 0.1, 0.1)
         self.shader.set_material_shine(0.1)
@@ -253,7 +250,7 @@ class GraphicsProgram3D:
                     self.model_matrix.pop_matrix()
 
     def draw_maze_base(self):
-        base_color = [0, 0.01, 0.01]
+        base_color = [0, 0.15, 0]
         base_thickness = 0.1
 
         self.model_matrix.push_matrix()
@@ -271,7 +268,6 @@ class GraphicsProgram3D:
         self.model_matrix.pop_matrix()
 
     def draw_maze_walls(self):
-        wall_color = [0.7, 0.4, 0.1]
         wall_color = [0.5, 0.5, 0.5]
 
         for row in self.maze.maze:

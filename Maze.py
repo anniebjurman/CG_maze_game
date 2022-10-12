@@ -1,7 +1,4 @@
 from enum import Enum
-
-
-import enum
 import random
 
 class Wall(Enum):
@@ -176,6 +173,7 @@ class Maze:
         self.set_cell(self.maze[9][9], Wall.SOUTH)
         self.set_cell(self.maze[9][10], Wall.WEST)
 
+    # Not finished algorithm
     def set_random_maze(self):
         start_cell = self.maze[self.size - 1][self.size - 1]
         end_cell = self.maze[0][0]
