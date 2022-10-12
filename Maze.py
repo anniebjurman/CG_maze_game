@@ -49,6 +49,7 @@ class Maze:
 
         self.prev_cell = self.maze[1][0]
         self.curr_cell = self.maze[0][0]
+        self.start_cell = self.maze[1][3]
 
     def set_cell(self, cell, wall):
         if wall == Wall.SOUTH:

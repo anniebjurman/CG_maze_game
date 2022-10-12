@@ -162,3 +162,6 @@ class Pyramid:
     def set_taken(self):
         self.color = [0.1, 0.8, 0.1]
         self.taken = True
+    def set_not_taken(self):
+        self.color = [0.8, 0.1, 0.1]
+        self.taken = False

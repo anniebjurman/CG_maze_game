@@ -1,4 +1,5 @@
 import math
+import time
 from OpenGL.GL import *
 from OpenGL.GLU import *
 
@@ -44,6 +45,12 @@ class GraphicsProgram3D:
         self.UP_key_a = False
         self.UP_key_d = False
 
+        # Game play
+        self.game_started = False
+        self.max_time_s = 120
+        self.time_elapsed = 0
+        self.start_time = None
+
         # init maze
         self.maze = Maze.Maze(11)
         self.maze.set_10_maze()
@@ -58,6 +65,12 @@ class GraphicsProgram3D:
 
         self.set_camera_at_entrance()
         # self.set_camera_overview()
+
+        start_information = "\nWelcome to The Maze Game!\n\nYour goal is to activate all 3 pyramids and get out of the " + \
+                             "maze before the time is up. Each pyramid turn green when activated." + \
+                             "You can't exit the maze during the run.\n\nYou have " + \
+                             str(self.max_time_s) + " s and you time starts when you enter the maze.\n\nGood Luck!"
+        print(start_information)
 
     def set_camera_at_entrance(self):
         self.view_matrix.eye = Base3DObjects.Point(0, 0.5, self.maze.cell_width * 2.5)
@@ -109,16 +122,46 @@ class GraphicsProgram3D:
             self.view_matrix.walk(walk_speed, 0, 0)
             self.shader.set_view_matrix(self.view_matrix.get_matrix())
 
-        if self.check_if_in_maze():
+        if self.check_if_on_base():
             self.check_collision()
 
-        if self.check_if_win():
-            print("Win!")
+        # Game play
+        if self.check_if_in_maze():
+            if not self.game_started:
+                self.start_time = pygame.time.get_ticks()
+                self.game_started = True
+            self.time_elapsed = (pygame.time.get_ticks() - self.start_time) / 1000
+            print("Time: " + str(self.time_elapsed)[:3] + " s")
 
-    def check_if_in_maze(self):
+        elif self.check_if_taken_all_pyramids() and self.game_started:
+            self.game_started = False
+            print("You are the winner!\nTotal time: " + str(self.time_elapsed)[:2] + " s")
+
+        elif self.game_started:
+            self.reset_game()
+
+        if self.game_started and self.time_elapsed > self.max_time_s:
+            self.set_camera_at_entrance()
+            self.reset_game()
+
+    def reset_game(self):
+        self.game_started = False
+        tot, taken = self.get_number_of_taken_pyramids()
+        print("Game over.\nNumber of taken pyramids: " + str(taken) + " / " + str(tot) + "\nTry again!")
+        self.reset_taken_objects()
+
+    def check_if_on_base(self):
         row, col = self.get_current_cell_cord()
         if 0 <= row < self.maze.size and \
            0 <= col < self.maze.size:
+           return True
+        else:
+            return False
+
+    def check_if_in_maze(self):
+        row, col = self.get_current_cell_cord()
+        if 0 < row < self.maze.size - 1 and \
+           0 < col < self.maze.size - 1:
            return True
         else:
             return False
@@ -221,7 +264,7 @@ class GraphicsProgram3D:
         pyr = Base3DObjects.Pyramid()
         self.maze.maze[cell_cord.row][cell_cord.col].object = pyr
 
-    def check_if_win(self):
+    def check_if_taken_all_pyramids(self):
         result = []
 
         for row in self.maze.maze:
@@ -230,6 +273,22 @@ class GraphicsProgram3D:
                     result.append(cell.object.taken)
 
         return all(result)
+
+    def get_number_of_taken_pyramids(self):
+        tot, taken = 0,0
+        for row in self.maze.maze:
+            for cell in row:
+                if cell.object:
+                    tot += 1
+                    if cell.object.taken:
+                        taken +=1
+        return tot, taken
+
+    def reset_taken_objects(self):
+        for row in self.maze.maze:
+            for cell in row:
+                if cell.object:
+                    cell.object.set_not_taken()
 
     def draw_pyramids(self):
         for row in self.maze.maze:
@@ -321,7 +380,6 @@ class GraphicsProgram3D:
 
                 elif event.type == pygame.KEYDOWN:
                     if event.key == K_ESCAPE:
-                        print("Escaping!")
                         exiting = True
                     elif event.key == K_RIGHT:
                         self.UP_key_right = True
