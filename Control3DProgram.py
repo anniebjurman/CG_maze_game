@@ -47,7 +47,7 @@ class GraphicsProgram3D:
 
         # Game play
         self.game_started = False
-        self.max_time_s = 120
+        self.max_time_s = 60
         self.time_elapsed = 0
         self.start_time = None
 
